@@ -46,7 +46,7 @@ NormalRNN::~NormalRNN()
     delete []hide;
 }
 
-NormalRNN::INIT()
+void NormalRNN::INIT()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -61,7 +61,7 @@ NormalRNN::INIT()
 	return;
 }
 
-NormalRNN::Datain(const char* FILENAME)
+void NormalRNN::Datain(const char* FILENAME)
 {
 	ifstream fin(FILENAME);
 	if(fin.fail())
@@ -83,7 +83,7 @@ NormalRNN::Datain(const char* FILENAME)
 	return;
 }
 
-NormalRNN::Dataout(const char* FILENAME)
+void NormalRNN::Dataout(const char* FILENAME)
 {
 	ofstream fout(FILENAME);
 	if(fout.fail())
@@ -168,7 +168,7 @@ DeepRNN::~DeepRNN()
     delete []hide;
 }
 
-DeepRNN::INIT()
+void DeepRNN::INIT()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -194,7 +194,7 @@ DeepRNN::INIT()
 	return;
 }
 
-DeepRNN::Datain(const char* FILENAME)
+void DeepRNN::Datain(const char* FILENAME)
 {
 	ifstream fin(FILENAME);
 	if(fin.fail())
@@ -227,7 +227,7 @@ DeepRNN::Datain(const char* FILENAME)
 	return;
 }
 
-DeepRNN::Dataout(const char* FILENAME)
+void DeepRNN::Dataout(const char* FILENAME)
 {
 	ofstream fout(FILENAME);
 	if(fout.fail())
