@@ -1,5 +1,5 @@
 /*lstmfunction.h header file made by ValK*/
-/*2019/3/24                   version 0.1*/
+/*2019/3/29                   version 0.2*/
 #ifndef __LSTMFUNCTION_H__
 #define __LSTMFUNCTION_H__
 
@@ -102,6 +102,106 @@ NormalLSTM::~NormalLSTM()
 		delete []hide[i].out_transwh;
 	}
     delete []hide;
+}
+
+NormalLSTM::INIT()
+{
+	srand(unsigned(time(NULL)));
+	for(int i=0;i<HNUM;i++)
+	{
+		hide[i].cell[0]=0;
+		hide[i].out[0]=0;
+		hide[i].fog_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hide[i].sig_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hide[i].tan_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hide[i].out_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		for(int j=0;j<INUM;j++)
+		{
+			hide[i].fog_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].sig_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].tan_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].out_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			hide[i].fog_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].sig_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].tan_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].out_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+	}
+}
+
+NormalLSTM::Datain(const char* FILENAME)
+{
+	ifstream fin(FILENAME);
+	if(fin.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fin>>hide[i].cell[0];
+		fin>>hide[i].out[0];
+		fin>>hide[i].fog_bia;
+		fin>>hide[i].sig_bia;
+		fin>>hide[i].tan_bia;
+		fin>>hide[i].out_bia;
+		for(int j=0;j<INUM;j++)
+		{
+			fin>>hide[i].fog_wi;
+			fin>>hide[i].sig_wi;
+			fin>>hide[i].tan_wi;
+			fin>>hide[i].out_wi;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fin>>hide[i].fog_wh;
+			fin>>hide[i].sig_wh;
+			fin>>hide[i].tan_wh;
+			fin>>hide[i].out_wh;
+		}
+	}
+	fin.close();
+	return;
+}
+
+NormalLSTM::Dataout(const char* FILENAME)
+{
+	ofstream fout(FILENAME);
+	if(fout.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fout<<hide[i].cell[0]<<endl;
+		fout<<hide[i].out[0]<<endl;
+		fout<<hide[i].fog_bia<<endl;
+		fout<<hide[i].sig_bia<<endl;
+		fout<<hide[i].tan_bia<<endl;
+		fout<<hide[i].out_bia<<endl;
+		for(int j=0;j<INUM;j++)
+		{
+			fout<<hide[i].fog_wi<<endl;
+			fout<<hide[i].sig_wi<<endl;
+			fout<<hide[i].tan_wi<<endl;
+			fout<<hide[i].out_wi<<endl;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fout<<hide[i].fog_wh<<endl;
+			fout<<hide[i].sig_wh<<endl;
+			fout<<hide[i].tan_wh<<endl;
+			fout<<hide[i].out_wh<<endl;
+		}
+	}
+	fout.close();
+	return;
 }
 
 DeepLSTM::DeepLSTM(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
@@ -285,5 +385,172 @@ DeepLSTM::~DeepLSTM()
         delete []hide[i];
     delete []hlink;
     delete []hide;
+}
+
+DeepLSTM::INIT()
+{
+	srand(unsigned(time(NULL)));
+	for(int i=0;i<HNUM;i++)
+	{
+		hlink[i].cell[0]=0;
+		hlink[i].out[0]=0;
+		hlink[i].fog_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hlink[i].sig_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hlink[i].tan_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hlink[i].out_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		for(int j=0;j<INUM;j++)
+		{
+			hlink[i].fog_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].sig_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].tan_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].out_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			hlink[i].fog_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].sig_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].tan_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].out_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			hide[i][d].cell[0]=0;
+			hide[i][d].out[0]=0;
+			hide[i][d].fog_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			hide[i][d].sig_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			hide[i][d].tan_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			hide[i][d].out_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			for(int j=0;j<HNUM;j++)
+			{
+				hide[i][d].fog_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].tan_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].out_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+
+				hide[i][d].fog_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].tan_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].out_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			}
+		}
+	return;
+}
+
+DeepLSTM::Datain(const char* FILENAME)
+{
+	ifstream fin(FILENAME);
+	if(fin.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fin>>hlink[i].cell[0]=0;
+		fin>>hlink[i].out[0]=0;
+		fin>>hlink[i].fog_bia;
+		fin>>hlink[i].sig_bia;
+		fin>>hlink[i].tan_bia;
+		fin>>hlink[i].out_bia;
+		for(int j=0;j<INUM;j++)
+		{
+			fin>>hlink[i].fog_wi;
+			fin>>hlink[i].sig_wi;
+			fin>>hlink[i].tan_wi;
+			fin>>hlink[i].out_wi;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fin>>hlink[i].fog_wh;
+			fin>>hlink[i].sig_wh;
+			fin>>hlink[i].tan_wh;
+			fin>>hlink[i].out_wh;
+		}
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			fin>>hide[i][d].cell[0]=0;
+			fin>>hide[i][d].out[0]=0;
+			fin>>hide[i][d].fog_bia;
+			fin>>hide[i][d].sig_bia;
+			fin>>hide[i][d].tan_bia;
+			fin>>hide[i][d].out_bia;
+			for(int j=0;j<HNUM;j++)
+			{
+				fin>>hide[i][d].fog_wi;
+				fin>>hide[i][d].sig_wi;
+				fin>>hide[i][d].tan_wi;
+				fin>>hide[i][d].out_wi;
+
+				fin>>hide[i][d].fog_wh;
+				fin>>hide[i][d].sig_wh;
+				fin>>hide[i][d].tan_wh;
+				fin>>hide[i][d].out_wh;
+			}
+		}
+	fin.close();
+	return;
+}
+
+DeepLSTM::Dataout(const char* FILENAME)
+{
+	ofstream fout(FILENAME);
+	if(fout.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fout<<hlink[i].cell[0]<<endl;
+		fout<<hlink[i].out[0]<<endl;
+		fout<<hlink[i].fog_bia<<endl;
+		fout<<hlink[i].sig_bia<<endl;
+		fout<<hlink[i].tan_bia<<endl;
+		fout<<hlink[i].out_bia<<endl;
+		for(int j=0;j<INUM;j++)
+		{
+			fout<<hlink[i].fog_wi<<endl;
+			fout<<hlink[i].sig_wi<<endl;
+			fout<<hlink[i].tan_wi<<endl;
+			fout<<hlink[i].out_wi<<endl;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fout<<hlink[i].fog_wh<<endl;
+			fout<<hlink[i].sig_wh<<endl;
+			fout<<hlink[i].tan_wh<<endl;
+			fout<<hlink[i].out_wh<<endl;
+		}
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			fout<<hide[i][d].cell[0]<<endl;
+			fout<<hide[i][d].out[0]<<endl;
+			fout<<hide[i][d].fog_bia<<endl;
+			fout<<hide[i][d].sig_bia<<endl;
+			fout<<hide[i][d].tan_bia<<endl;
+			fout<<hide[i][d].out_bia<<endl;
+			for(int j=0;j<HNUM;j++)
+			{
+				fout<<hide[i][d].fog_wi<<endl;
+				fout<<hide[i][d].sig_wi<<endl;
+				fout<<hide[i][d].tan_wi<<endl;
+				fout<<hide[i][d].out_wi<<endl;
+
+				fout<<hide[i][d].fog_wh<<endl;
+				fout<<hide[i][d].sig_wh<<endl;
+				fout<<hide[i][d].tan_wh<<endl;
+				fout<<hide[i][d].out_wh<<endl;
+			}
+		}
+	fout.close();
+	return;
 }
 #endif
