@@ -28,6 +28,7 @@ NormalGRU::NormalGRU(int InputlayerNum,int HiddenlayerNum,int Maxtime)
 	}
 	return;
 }
+
 NormalGRU::~NormalGRU()
 {
 	for(int i=0;i<HNUM;i++)
@@ -42,6 +43,95 @@ NormalGRU::~NormalGRU()
 		delete []hide[i].sig_update_transwh;delete []hide[i].sig_replace_transwh;delete []hide[i].tan_replace_transwh;
 	}
 	delete []hide;
+	return;
+}
+
+void NormalGRU::INIT()
+{
+	srand(unsigned(time(NULL)));
+	for(int i=0;i<HNUM;i++)
+	{
+		hide[i].out[0]=0;
+		hide[i].sig_update_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hide[i].sig_replace_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hide[i].tan_replace_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		for(int j=0;j<INUM;j++)
+		{
+			hide[i].sig_update_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].sig_replace_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].tan_replace_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			hide[i].sig_update_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].sig_replace_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].tan_replace_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+	}
+	return;
+}
+
+void NormalGRU::Datain(const char* FILENAME)
+{
+	ifstream fin(FILENAME);
+	if(fin.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fin>>hide[i].out[0];
+		fin>>hide[i].sig_update_bia;
+		fin>>hide[i].sig_replace_bia;
+		fin>>hide[i].tan_replace_bia;
+		for(int j=0;j<INUM;j++)
+		{
+			fin>>hide[i].sig_update_wi[j];
+			fin>>hide[i].sig_replace_wi[j];
+			fin>>hide[i].tan_replace_wi[j];
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fin>>hide[i].sig_update_wh[j];
+			fin>>hide[i].sig_replace_wh[j];
+			fin>>hide[i].tan_replace_wh[j];
+		}
+	}
+	fin.close();
+	return;
+}
+
+void NormalGRU::Dataout(const char* FILENAME)
+{
+	ofstream fout(FILENAME);
+	if(fout.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fout<<hide[i].out[0]<<endl;
+		fout<<hide[i].sig_update_bia<<endl;
+		fout<<hide[i].sig_replace_bia<<endl;
+		fout<<hide[i].tan_replace_bia<<endl;
+		for(int j=0;j<INUM;j++)
+		{
+			fout<<hide[i].sig_update_wi[j]<<endl;
+			fout<<hide[i].sig_replace_wi[j]<<endl;
+			fout<<hide[i].tan_replace_wi[j]<<endl;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fout<<hide[i].sig_update_wh[j]<<endl;
+			fout<<hide[i].sig_replace_wh[j]<<endl;
+			fout<<hide[i].tan_replace_wh[j]<<endl;
+		}
+	}
+	fout.close();
 	return;
 }
 
@@ -79,6 +169,7 @@ DeepGRU::DeepGRU(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
 			hide[i][d].sig_update_transwh=new double[HNUM];hide[i][d].sig_replace_transwh=new double[HNUM];hide[i][d].tan_replace_transwh=new double[HNUM];
 		}
 }
+
 DeepGRU::~DeepGRU()
 {
 	for(int d=0;d<DEPTH;d++)
@@ -108,5 +199,145 @@ DeepGRU::~DeepGRU()
         delete []hide[i];
     delete []hlink;
     delete []hide;
+}
+
+void DeepGRU::INIT()
+{
+	srand(unsigned(time(NULL)));
+	for(int i=0;i<HNUM;i++)
+	{
+		hlink[i].out[0]=0;
+		hlink[i].sig_update_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hlink[i].sig_replace_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		hlink[i].tan_replace_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		for(int j=0;j<INUM;j++)
+		{
+			hlink[i].sig_update_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].sig_replace_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].tan_replace_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			hlink[i].sig_update_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].sig_replace_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].tan_replace_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		}
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			hide[i][d].out[0]=0;
+			hide[i][d].sig_update_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			hide[i][d].sig_replace_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			hide[i][d].tan_replace_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			for(int j=0;j<HNUM;j++)
+			{
+				hide[i][d].sig_update_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_replace_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].tan_replace_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_update_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_replace_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].tan_replace_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			}
+		}
+	return;
+}
+
+void DeepGRU::Datain(const char* FILENAME)
+{
+	ifstream fin(FILENAME);
+	if(fin.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fin>>hlink[i].out[0];
+		fin>>hlink[i].sig_update_bia;
+		fin>>hlink[i].sig_replace_bia;
+		fin>>hlink[i].tan_replace_bia;
+		for(int j=0;j<INUM;j++)
+		{
+			fin>>hlink[i].sig_update_wi[j];
+			fin>>hlink[i].sig_replace_wi[j];
+			fin>>hlink[i].tan_replace_wi[j];
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fin>>hlink[i].sig_update_wh[j];
+			fin>>hlink[i].sig_replace_wh[j];
+			fin>>hlink[i].tan_replace_wh[j];
+		}
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			fin>>hide[i][d].out[0];
+			fin>>hide[i][d].sig_update_bia;
+			fin>>hide[i][d].sig_replace_bia;
+			fin>>hide[i][d].tan_replace_bia;
+			for(int j=0;j<HNUM;j++)
+			{
+				fin>>hide[i][d].sig_update_wi[j];
+				fin>>hide[i][d].sig_replace_wi[j];
+				fin>>hide[i][d].tan_replace_wi[j];
+				fin>>hide[i][d].sig_update_wh[j];
+				fin>>hide[i][d].sig_replace_wh[j];
+				fin>>hide[i][d].tan_replace_wh[j];
+			}
+		}
+	fin.close();
+	return;
+}
+
+void DeepGRU::Dataout(const char* FILENAME)
+{
+	ofstream fout(FILENAME);
+	if(fout.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fout<<hlink[i].out[0]<<endl;
+		fout<<hlink[i].sig_update_bia<<endl;
+		fout<<hlink[i].sig_replace_bia<<endl;
+		fout<<hlink[i].tan_replace_bia<<endl;
+		for(int j=0;j<INUM;j++)
+		{
+			fout<<hlink[i].sig_update_wi[j]<<endl;
+			fout<<hlink[i].sig_replace_wi[j]<<endl;
+			fout<<hlink[i].tan_replace_wi[j]<<endl;
+		}
+		for(int j=0;j<HNUM;j++)
+		{
+			fout<<hlink[i].sig_update_wh[j]<<endl;
+			fout<<hlink[i].sig_replace_wh[j]<<endl;
+			fout<<hlink[i].tan_replace_wh[j]<<endl;
+		}
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			fout<<hide[i][d].out[0];
+			fout<<hide[i][d].sig_update_bia<<endl;
+			fout<<hide[i][d].sig_replace_bia<<endl;
+			fout<<hide[i][d].tan_replace_bia<<endl;
+			for(int j=0;j<HNUM;j++)
+			{
+				fout<<hide[i][d].sig_update_wi[j]<<endl;
+				fout<<hide[i][d].sig_replace_wi[j]<<endl;
+				fout<<hide[i][d].tan_replace_wi[j]<<endl;
+				fout<<hide[i][d].sig_update_wh[j]<<endl;
+				fout<<hide[i][d].sig_replace_wh[j]<<endl;
+				fout<<hide[i][d].tan_replace_wh[j]<<endl;
+			}
+		}
+	fout.close();
+	return;
 }
 #endif
