@@ -104,7 +104,7 @@ NormalLSTM::~NormalLSTM()
     delete []hide;
 }
 
-NormalLSTM::INIT()
+void NormalLSTM::INIT()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -117,22 +117,22 @@ NormalLSTM::INIT()
 		hide[i].out_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
 		for(int j=0;j<INUM;j++)
 		{
-			hide[i].fog_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hide[i].sig_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hide[i].tan_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hide[i].out_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].fog_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].sig_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].tan_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].out_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			hide[i].fog_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hide[i].sig_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hide[i].tan_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hide[i].out_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].fog_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].sig_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].tan_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hide[i].out_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
 		}
 	}
 }
 
-NormalLSTM::Datain(const char* FILENAME)
+void NormalLSTM::Datain(const char* FILENAME)
 {
 	ifstream fin(FILENAME);
 	if(fin.fail())
@@ -151,24 +151,24 @@ NormalLSTM::Datain(const char* FILENAME)
 		fin>>hide[i].out_bia;
 		for(int j=0;j<INUM;j++)
 		{
-			fin>>hide[i].fog_wi;
-			fin>>hide[i].sig_wi;
-			fin>>hide[i].tan_wi;
-			fin>>hide[i].out_wi;
+			fin>>hide[i].fog_wi[j];
+			fin>>hide[i].sig_wi[j];
+			fin>>hide[i].tan_wi[j];
+			fin>>hide[i].out_wi[j];
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fin>>hide[i].fog_wh;
-			fin>>hide[i].sig_wh;
-			fin>>hide[i].tan_wh;
-			fin>>hide[i].out_wh;
+			fin>>hide[i].fog_wh[j];
+			fin>>hide[i].sig_wh[j];
+			fin>>hide[i].tan_wh[j];
+			fin>>hide[i].out_wh[j];
 		}
 	}
 	fin.close();
 	return;
 }
 
-NormalLSTM::Dataout(const char* FILENAME)
+void NormalLSTM::Dataout(const char* FILENAME)
 {
 	ofstream fout(FILENAME);
 	if(fout.fail())
@@ -187,17 +187,17 @@ NormalLSTM::Dataout(const char* FILENAME)
 		fout<<hide[i].out_bia<<endl;
 		for(int j=0;j<INUM;j++)
 		{
-			fout<<hide[i].fog_wi<<endl;
-			fout<<hide[i].sig_wi<<endl;
-			fout<<hide[i].tan_wi<<endl;
-			fout<<hide[i].out_wi<<endl;
+			fout<<hide[i].fog_wi[j]<<endl;
+			fout<<hide[i].sig_wi[j]<<endl;
+			fout<<hide[i].tan_wi[j]<<endl;
+			fout<<hide[i].out_wi[j]<<endl;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fout<<hide[i].fog_wh<<endl;
-			fout<<hide[i].sig_wh<<endl;
-			fout<<hide[i].tan_wh<<endl;
-			fout<<hide[i].out_wh<<endl;
+			fout<<hide[i].fog_wh[j]<<endl;
+			fout<<hide[i].sig_wh[j]<<endl;
+			fout<<hide[i].tan_wh[j]<<endl;
+			fout<<hide[i].out_wh[j]<<endl;
 		}
 	}
 	fout.close();
@@ -387,7 +387,7 @@ DeepLSTM::~DeepLSTM()
     delete []hide;
 }
 
-DeepLSTM::INIT()
+void DeepLSTM::INIT()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -400,17 +400,17 @@ DeepLSTM::INIT()
 		hlink[i].out_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
 		for(int j=0;j<INUM;j++)
 		{
-			hlink[i].fog_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hlink[i].sig_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hlink[i].tan_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hlink[i].out_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].fog_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].sig_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].tan_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].out_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			hlink[i].fog_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hlink[i].sig_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hlink[i].tan_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-			hlink[i].out_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].fog_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].sig_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].tan_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			hlink[i].out_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
 		}
 	}
 	for(int d=0;d<DEPTH;d++)
@@ -424,21 +424,21 @@ DeepLSTM::INIT()
 			hide[i][d].out_bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
 			for(int j=0;j<HNUM;j++)
 			{
-				hide[i][d].fog_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-				hide[i][d].sig_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-				hide[i][d].tan_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-				hide[i][d].out_wi=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].fog_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].tan_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].out_wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
 
-				hide[i][d].fog_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-				hide[i][d].sig_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-				hide[i][d].tan_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
-				hide[i][d].out_wh=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].fog_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].sig_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].tan_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].out_wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
 			}
 		}
 	return;
 }
 
-DeepLSTM::Datain(const char* FILENAME)
+void DeepLSTM::Datain(const char* FILENAME)
 {
 	ifstream fin(FILENAME);
 	if(fin.fail())
@@ -449,54 +449,54 @@ DeepLSTM::Datain(const char* FILENAME)
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fin>>hlink[i].cell[0]=0;
-		fin>>hlink[i].out[0]=0;
+		fin>>hlink[i].cell[0];
+		fin>>hlink[i].out[0];
 		fin>>hlink[i].fog_bia;
 		fin>>hlink[i].sig_bia;
 		fin>>hlink[i].tan_bia;
 		fin>>hlink[i].out_bia;
 		for(int j=0;j<INUM;j++)
 		{
-			fin>>hlink[i].fog_wi;
-			fin>>hlink[i].sig_wi;
-			fin>>hlink[i].tan_wi;
-			fin>>hlink[i].out_wi;
+			fin>>hlink[i].fog_wi[j];
+			fin>>hlink[i].sig_wi[j];
+			fin>>hlink[i].tan_wi[j];
+			fin>>hlink[i].out_wi[j];
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fin>>hlink[i].fog_wh;
-			fin>>hlink[i].sig_wh;
-			fin>>hlink[i].tan_wh;
-			fin>>hlink[i].out_wh;
+			fin>>hlink[i].fog_wh[j];
+			fin>>hlink[i].sig_wh[j];
+			fin>>hlink[i].tan_wh[j];
+			fin>>hlink[i].out_wh[j];
 		}
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
-			fin>>hide[i][d].cell[0]=0;
-			fin>>hide[i][d].out[0]=0;
+			fin>>hide[i][d].cell[0];
+			fin>>hide[i][d].out[0];
 			fin>>hide[i][d].fog_bia;
 			fin>>hide[i][d].sig_bia;
 			fin>>hide[i][d].tan_bia;
 			fin>>hide[i][d].out_bia;
 			for(int j=0;j<HNUM;j++)
 			{
-				fin>>hide[i][d].fog_wi;
-				fin>>hide[i][d].sig_wi;
-				fin>>hide[i][d].tan_wi;
-				fin>>hide[i][d].out_wi;
+				fin>>hide[i][d].fog_wi[j];
+				fin>>hide[i][d].sig_wi[j];
+				fin>>hide[i][d].tan_wi[j];
+				fin>>hide[i][d].out_wi[j];
 
-				fin>>hide[i][d].fog_wh;
-				fin>>hide[i][d].sig_wh;
-				fin>>hide[i][d].tan_wh;
-				fin>>hide[i][d].out_wh;
+				fin>>hide[i][d].fog_wh[j];
+				fin>>hide[i][d].sig_wh[j];
+				fin>>hide[i][d].tan_wh[j];
+				fin>>hide[i][d].out_wh[j];
 			}
 		}
 	fin.close();
 	return;
 }
 
-DeepLSTM::Dataout(const char* FILENAME)
+void DeepLSTM::Dataout(const char* FILENAME)
 {
 	ofstream fout(FILENAME);
 	if(fout.fail())
@@ -515,17 +515,17 @@ DeepLSTM::Dataout(const char* FILENAME)
 		fout<<hlink[i].out_bia<<endl;
 		for(int j=0;j<INUM;j++)
 		{
-			fout<<hlink[i].fog_wi<<endl;
-			fout<<hlink[i].sig_wi<<endl;
-			fout<<hlink[i].tan_wi<<endl;
-			fout<<hlink[i].out_wi<<endl;
+			fout<<hlink[i].fog_wi[j]<<endl;
+			fout<<hlink[i].sig_wi[j]<<endl;
+			fout<<hlink[i].tan_wi[j]<<endl;
+			fout<<hlink[i].out_wi[j]<<endl;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fout<<hlink[i].fog_wh<<endl;
-			fout<<hlink[i].sig_wh<<endl;
-			fout<<hlink[i].tan_wh<<endl;
-			fout<<hlink[i].out_wh<<endl;
+			fout<<hlink[i].fog_wh[j]<<endl;
+			fout<<hlink[i].sig_wh[j]<<endl;
+			fout<<hlink[i].tan_wh[j]<<endl;
+			fout<<hlink[i].out_wh[j]<<endl;
 		}
 	}
 	for(int d=0;d<DEPTH;d++)
@@ -539,15 +539,15 @@ DeepLSTM::Dataout(const char* FILENAME)
 			fout<<hide[i][d].out_bia<<endl;
 			for(int j=0;j<HNUM;j++)
 			{
-				fout<<hide[i][d].fog_wi<<endl;
-				fout<<hide[i][d].sig_wi<<endl;
-				fout<<hide[i][d].tan_wi<<endl;
-				fout<<hide[i][d].out_wi<<endl;
+				fout<<hide[i][d].fog_wi[j]<<endl;
+				fout<<hide[i][d].sig_wi[j]<<endl;
+				fout<<hide[i][d].tan_wi[j]<<endl;
+				fout<<hide[i][d].out_wi[j]<<endl;
 
-				fout<<hide[i][d].fog_wh<<endl;
-				fout<<hide[i][d].sig_wh<<endl;
-				fout<<hide[i][d].tan_wh<<endl;
-				fout<<hide[i][d].out_wh<<endl;
+				fout<<hide[i][d].fog_wh[j]<<endl;
+				fout<<hide[i][d].sig_wh[j]<<endl;
+				fout<<hide[i][d].tan_wh[j]<<endl;
+				fout<<hide[i][d].out_wh[j]<<endl;
 			}
 		}
 	fout.close();
