@@ -1,5 +1,5 @@
 /*rnnfunction.h header file made by ValK*/
-/*2019/3/24                  version 0.1*/
+/*2019/3/29                  version 0.2*/
 
 #ifndef __RNNFUNCTION_H__
 #define __RNNFUNCTION_H__
@@ -44,6 +44,65 @@ NormalRNN::~NormalRNN()
         delete []hide[i].transwh;
     }
     delete []hide;
+}
+
+NormalRNN::INIT()
+{
+	srand(unsigned(time(NULL)));
+	for(int i=0;i<HNUM;i++)
+	{
+		hide[i].out[0]=0;
+		hide[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		for(int j=0;j<INUM;j++)
+			hide[i].wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		for(int j=0;j<HNUM;j++)
+			hide[i].wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+	}
+	return;
+}
+
+NormalRNN::Datain(const char* FILENAME)
+{
+	ifstream fin(FILENAME);
+	if(fin.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fin>>hide[i].out[0];
+		fin>>hide[i].bia;
+		for(int j=0;j<INUM;j++)
+			fin>>hide[i].wi[j];
+		for(int j=0;j<HNUM;j++)
+			fin>>hide[i].wh[j];
+	}
+	fin.close();
+	return;
+}
+
+NormalRNN::Dataout(const char* FILENAME)
+{
+	ofstream fout(FILENAME);
+	if(fout.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fout<<hide[i].out[0]<<endl;
+		fout<<hide[i].bia<<endl;
+		for(int j=0;j<INUM;j++)
+			fout<<hide[i].wi[j]<<endl;
+		for(int j=0;j<HNUM;j++)
+			fout<<hide[i].wh[j]<<endl;
+	}
+	fout.close();
+	return;
 }
 
 DeepRNN::DeepRNN(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
@@ -109,4 +168,95 @@ DeepRNN::~DeepRNN()
     delete []hide;
 }
 
+DeepRNN::INIT()
+{
+	srand(unsigned(time(NULL)));
+	for(int i=0;i<HNUM;i++)
+	{
+		hlink[i].out[0]=0;
+		hlink[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+		for(int j=0;j<INUM;j++)
+			hlink[i].wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+		for(int j=0;j<HNUM;j++)
+			hlink[i].wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			hide[i][d].out[0]=0;
+			hide[i][d].bia=(rand()%2? 1:-1)*(1.0+rand()%10)/10.0;
+			for(int j=0;j<HNUM;j++)
+			{
+				hide[i][d].wi[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+				hide[i][d].wh[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/50.0;
+			}
+		}
+	return;
+}
+
+DeepRNN::Datain(const char* FILENAME)
+{
+	ifstream fin(FILENAME);
+	if(fin.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fin>>hlink[i].out[0];
+		fin>>hlink[i].bia;
+		for(int j=0;j<INUM;j++)
+			fin>>hlink[i].wi[j];
+		for(int j=0;j<HNUM;j++)
+			fin>>hlink[i].wh[j];
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			fin>>hide[i][d].out[0];
+			fin>>hide[i][d].bia;
+			for(int j=0;j<HNUM;j++)
+			{
+				fin>>hide[i][d].wi[j];
+				fin>>hide[i][d].wh[j];
+			}
+		}
+	fin.close();
+	return;
+}
+
+DeepRNN::Dataout(const char* FILENAME)
+{
+	ofstream fout(FILENAME);
+	if(fout.fail())
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"Cannot open file."<<endl;
+		exit(0);
+	}
+	for(int i=0;i<HNUM;i++)
+	{
+		fout<<hlink[i].out[0]<<endl;
+		fout<<hlink[i].bia<<endl;
+		for(int j=0;j<INUM;j++)
+			fout<<hlink[i].wi[j]<<endl;
+		for(int j=0;j<HNUM;j++)
+			fout<<hlink[i].wh[j]<<endl;
+	}
+	for(int d=0;d<DEPTH;d++)
+		for(int i=0;i<HNUM;i++)
+		{
+			fout<<hide[i][d].out[0]<<endl;
+			fout<<hide[i][d].bia<<endl;
+			for(int j=0;j<HNUM;j++)
+			{
+				fout<<hide[i][d].wi[j]<<endl;
+				fout<<hide[i][d].wh[j]<<endl;
+			}
+		}
+	fout.close();
+	return;
+}
 #endif
