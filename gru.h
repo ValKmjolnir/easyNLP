@@ -1,0 +1,51 @@
+/*gru.h header file made by ValK*/
+/*2019/3/29          version 0.1*/
+#ifndef __GRU_H__
+#define __GRU_H__
+
+struct gru_neuron
+{
+	double *out;
+	double *sig_update_in, *sig_update_out, *sig_update_wi, *sig_update_wh ;
+	double *sig_replace_in,*sig_replace_out,*sig_replace_wi,*sig_replace_wh;
+	double *tan_replace_in,*tan_replace_out,*tan_replace_wi,*tan_replace_wh;
+	double sig_update_bia, sig_update_transbia ;
+	double sig_replace_bia,sig_replace_transbia;
+	double tan_replace_bia,tan_replace_transbia;
+	double *sig_update_diff, *sig_update_transwi, *sig_update_transwh ;
+	double *sig_replace_diff,*sig_replace_transwi,*sig_replace_transwh;
+	double *tan_replace_diff,*tan_replace_transwi,*tan_replace_transwh;
+};
+class NormalGRU
+{
+	private:
+		int INUM;
+		int HNUM;
+		int MAXTIME;
+		gru_neuron *hide;
+	public:
+		NormalGRU(int,int,int);
+		~NormalGRU();
+		void INIT();
+		void Datain(const char*);
+		void Dataout(const char*);
+};
+class DeepGRU
+{
+	private:
+		int INUM;
+		int HNUM;
+		int DEPTH;
+		int MAXTIME;
+		gru_neuron *hlink;
+		gru_neuron **hide;
+	public:
+		DeepGRU(int,int,int,int);
+		~DeepGRU();
+		void INIT();
+		void Datain(const char*);
+		void Dataout(const char*);
+};
+#include "grufunction.h"
+
+#endif
