@@ -105,9 +105,9 @@ void Char2Vec::Mainwork(const char *Filename)
 			input[i]=1;
 			softmax=0;
 			for(int j=0;j<95;j++)
-				softmax+=cnt[i][j];
+				softmax+=exp(cnt[i][j]);
 			for(int j=0;j<ONUM;j++)
-				expect[j]=(1.0*cnt[i][j])/softmax;
+				expect[j]=exp(cnt[i][j])/softmax;
 			Calc();
 			error=0;
 			for(int j=0;j<ONUM;j++)
@@ -123,6 +123,9 @@ void Char2Vec::Mainwork(const char *Filename)
 				Dataout(Filename);
 		}
 	}
+	cout<<"[easyNLP]>>Final output in progress..."<<endl;
+	Dataout(Filename);
+	cout<<"[easyNLP]>>Training complete."<<endl;
 	return;
 }
 void Char2Vec::Calc()
@@ -221,22 +224,26 @@ void Char2Vec::Dataout(const char *Filename)
 }
 void Char2Vec::Print()
 {
+	cout<<"[easyNLP]>>[Result-Char2Vec-95char]"<<endl;
 	for(int i=0;i<95;i++)
 	{
 		for(int j=0;j<INUM;j++)
 			input[j]=0;
 		input[i]=1;
 		Calc();
-		cout<<(char)(i+32)<<":  ";
+	cout<<"        |"<<(char)(i+32)<<":  ";
 		for(int j=0;j<ONUM;j++)
 			if(output[j].out>0.1)
-				cout<<(char)(j+32)<<':'<<100*output[j].out<<"% ";
+				cout<<"|"<<(char)(j+32)<<':'<<100*output[j].out<<"% ";
 		cout<<endl;
 	}
 	return;
 }
 void Char2Vec::CountChar(const char *Filename)
 {
+	for(int i=0;i<95;i++)
+		for(int j=0;j<95;j++)
+			cnt[i][j]=0;
 	char temp[1024];
 	ifstream fin(Filename);
 	if(fin.fail())
@@ -271,7 +278,7 @@ void Char2Vec::CharDataIllustration(const char* Filename)
 	for(int i=0;i<95;i++)
 	{
 		if(i==0)
-			fout<<"空格 ";
+			fout<<"space ";
 		else
 			fout<<(char)(i+32)<<' ';
 	}
@@ -279,7 +286,7 @@ void Char2Vec::CharDataIllustration(const char* Filename)
 	for(int i=0;i<95;i++)
 	{
 		if(i==0)
-			fout<<"空格 ";
+			fout<<"space ";
 		else
 			fout<<(char)(i+32)<<' ';
 		for(int j=0;j<95;j++)
