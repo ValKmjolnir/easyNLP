@@ -1,5 +1,5 @@
 /*seq2vec.h header file by ValK*/
-/*2019/4/22          version0.3*/
+/*2019/5/2           version1.0*/
 #ifndef __SEQ2VEC_H__
 #define __SEQ2VEC_H__
 #include<cstring>
@@ -747,8 +747,7 @@ void DeepSeq2Vec::Calc(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<"Unexpected error occurred..."<<endl;
-		cout<<"[Error]Unknown neural network name."<<endl;
+		cout<<"easyNLP>>[Error]Unknown neural network name."<<endl;
 		exit(0);
 	}
 }
@@ -757,20 +756,532 @@ void DeepSeq2Vec::Training(const char* __Typename,const int T)
 {
 	if(__Typename=="rnn")
 	{
+		double trans;
+		for(int t=0;t<=T;t++)
+			for(int i=0;i<ONUM;i++)
+				output[i].diff=expect[i]-output[i].out;
+		for(int i=0;i<ONUM;i++)
+			output[i].diff*=output[i].out*(1-output[i].out);
+		for(int i=0;i<HNUM;i++)
+		{
+			trans=0;
+			for(int j=0;j<ONUM;j++)
+				trans+=output[j].diff*output[j].w[i];
+			rnnencoder->hide[i][DEPTH-1].diff[T]=trans*difftanh(rnnencoder->hide[i][DEPTH-1].in[T]);
+		}
+		for(int d=DEPTH-2;d>=0;d--)
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+					trans+=rnnencoder->hide[j][d+1].diff[T]*rnnencoder->hide[j][d+1].wi[i];
+				rnnencoder->hide[i][d].diff[T]=trans*difftanh(rnnencoder->hide[i][d].in[T]);
+			}
+		for(int i=0;i<HNUM;i++)
+		{
+			trans=0;
+			for(int j=0;j<HNUM;j++)
+				trans+=rnnencoder->hide[j][0].diff[T]*rnnencoder->hide[j][0].wi[i];
+			rnnencoder->hlink[i].diff[T]=trans*difftanh(rnnencoder->hlink[i].in[T]);
+		}
+		for(int t=T-1;t>=1;t--)
+		{
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+					trans+=rnnencoder->hide[j][DEPTH-1].diff[t+1]*rnnencoder->hide[j][DEPTH-1].wh[i];
+				rnnencoder->hide[i][DEPTH-1].diff[t]=trans*difftanh(rnnencoder->hide[i][DEPTH-1].in[t]);
+			}
+			for(int d=DEPTH-2;d>=0;d--)
+				for(int i=0;i<HNUM;i++)
+				{
+					trans=0;
+					for(int j=0;j<HNUM;j++)
+					{
+						trans+=rnnencoder->hide[j][d+1].diff[t]*rnnencoder->hide[j][d+1].wi[i];
+						trans+=rnnencoder->hide[j][d].diff[t+1]*rnnencoder->hide[j][d].wh[i];
+					}
+					rnnencoder->hide[i][d].diff[t]=trans*difftanh(rnnencoder->hide[i][d].in[t]);
+				}
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+				{
+					trans+=rnnencoder->hide[j][0].diff[t]*rnnencoder->hide[j][0].wi[i];
+					trans+=rnnencoder->hlink[j].diff[t+1]*rnnencoder->hlink[j].wh[i];
+				}
+				rnnencoder->hlink[i].diff[t]=trans*difftanh(rnnencoder->hlink[i].in[t]);
+			}
+		}
 		
+		for(int i=0;i<HNUM;i++)
+		{
+			rnnencoder->hlink[i].transbia=0;
+			for(int j=0;j<INUM;j++)
+				rnnencoder->hlink[i].transwi[j]=0;
+			for(int j=0;j<HNUM;j++)
+				rnnencoder->hlink[i].transwh[j]=0;
+		}
+		for(int d=0;d<DEPTH;d++)
+			for(int i=0;i<HNUM;i++)
+			{
+				rnnencoder->hide[i][d].transbia=0;
+				for(int j=0;j<HNUM;j++)
+				{
+					rnnencoder->hide[i][d].transwi[j]=0;
+					rnnencoder->hide[i][d].transwh[j]=0;
+				}
+			}
+		for(int t=1;t<=T;t++)
+		{
+			for(int d=DEPTH-1;d>=0;d--)
+				for(int i=0;i<HNUM;i++)
+				{
+					rnnencoder->hide[i][d].transbia+=2*rnnencoder->hide[i][d].diff[t];
+					for(int j=0;j<HNUM;j++)
+					{
+						rnnencoder->hide[i][d].transwh[j]+=rnnencoder->hide[i][d].diff[t]*rnnencoder->hide[j][d].out[t-1];
+						rnnencoder->hide[i][d].transwi[j]+=rnnencoder->hide[i][d].diff[t]*(d>0? rnnencoder->hide[j][d-1].out[t]:rnnencoder->hlink[j].out[t]);
+					}
+				}
+			for(int i=0;i<HNUM;i++)
+			{
+				rnnencoder->hlink[i].transbia+=2*rnnencoder->hlink[i].diff[t];
+				for(int j=0;j<HNUM;j++)
+					rnnencoder->hlink[i].transwh[j]+=rnnencoder->hlink[i].diff[t]*rnnencoder->hlink[j].out[t-1];
+				for(int j=0;j<INUM;j++)
+					rnnencoder->hlink[i].transwi[j]+=rnnencoder->hlink[i].diff[t]*expect[j];//output[j].out[t-1];
+			}
+		}
+		
+		for(int i=0;i<HNUM;i++)
+		{
+			rnnencoder->hlink[i].bia+=ClipGradient(learningrate*rnnencoder->hlink[i].transbia);
+			for(int j=0;j<INUM;j++)
+				rnnencoder->hlink[i].wi[j]+=ClipGradient(learningrate*rnnencoder->hlink[i].transwi[j]);
+			for(int j=0;j<HNUM;j++)
+				rnnencoder->hlink[i].wh[j]+=ClipGradient(learningrate*rnnencoder->hlink[i].transwh[j]);
+		}
+		for(int d=0;d<DEPTH;d++)
+				for(int i=0;i<HNUM;i++)
+				{
+					rnnencoder->hide[i][d].bia+=ClipGradient(learningrate*rnnencoder->hide[i][d].transbia);
+					for(int j=0;j<HNUM;j++)
+					{
+						rnnencoder->hide[i][d].wi[j]+=ClipGradient(learningrate*rnnencoder->hide[i][d].transwi[j]);
+						rnnencoder->hide[i][d].wh[j]+=ClipGradient(learningrate*rnnencoder->hide[i][d].transwh[j]);
+					}
+				}
+		for(int i=0;i<ONUM;i++)
+		{
+			output[i].bia+=ClipGradient(learningrate*output[i].diff);
+			for(int j=0;j<HNUM;j++)
+				output[i].w[j]+=ClipGradient(learningrate*output[i].diff*rnnencoder->hide[j][DEPTH-1].out[T]);
+		}
+		return;
 	}
 	else if(__Typename=="lstm")
 	{
+		double trans;
+		for(int t=0;t<=T;t++)
+			for(int i=0;i<ONUM;i++)
+				output[i].diff=expect[i]-output[i].out;
+		for(int i=0;i<ONUM;i++)
+			output[i].diff*=output[i].out*(1-output[i].out);
+		for(int i=0;i<HNUM;i++)
+		{
+			trans=0;
+			for(int j=0;j<ONUM;j++)
+				trans+=output[j].diff*output[j].w[i];
+			lstmencoder->hide[i][DEPTH-1].fog_diff[T]=trans*lstmencoder->hide[i][DEPTH-1].out_out[T]*difftanh(lstmencoder->hide[i][DEPTH-1].cell[T])*lstmencoder->hide[i][DEPTH-1].cell[T-1]*diffsigmoid(lstmencoder->hide[i][DEPTH-1].fog_in[T]);
+			lstmencoder->hide[i][DEPTH-1].sig_diff[T]=trans*lstmencoder->hide[i][DEPTH-1].out_out[T]*difftanh(lstmencoder->hide[i][DEPTH-1].cell[T])*lstmencoder->hide[i][DEPTH-1].tan_out[T]*diffsigmoid(lstmencoder->hide[i][DEPTH-1].sig_in[T]);
+			lstmencoder->hide[i][DEPTH-1].tan_diff[T]=trans*lstmencoder->hide[i][DEPTH-1].out_out[T]*difftanh(lstmencoder->hide[i][DEPTH-1].cell[T])*lstmencoder->hide[i][DEPTH-1].sig_out[T]*difftanh(lstmencoder->hide[i][DEPTH-1].tan_in[T]);
+			lstmencoder->hide[i][DEPTH-1].out_diff[T]=trans*tanh(lstmencoder->hide[i][DEPTH-1].cell[T])*diffsigmoid(lstmencoder->hide[i][DEPTH-1].out_in[T]);
+		}
+		for(int d=DEPTH-2;d>=0;d--)
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+					trans+=lstmencoder->hide[j][d+1].fog_diff[T]*lstmencoder->hide[j][d+1].fog_wi[i]+lstmencoder->hide[j][d+1].sig_diff[T]*lstmencoder->hide[j][d+1].sig_wi[i]+lstmencoder->hide[j][d+1].tan_diff[T]*lstmencoder->hide[j][d+1].tan_wi[i]+lstmencoder->hide[j][d+1].out_diff[T]*lstmencoder->hide[j][d+1].out_wi[i];
+				lstmencoder->hide[i][d].fog_diff[T]=trans*lstmencoder->hide[i][d].out_out[T]*difftanh(lstmencoder->hide[i][d].cell[T])*lstmencoder->hide[i][d].cell[T-1]*diffsigmoid(lstmencoder->hide[i][d].fog_in[T]);
+				lstmencoder->hide[i][d].sig_diff[T]=trans*lstmencoder->hide[i][d].out_out[T]*difftanh(lstmencoder->hide[i][d].cell[T])*lstmencoder->hide[i][d].tan_out[T]*diffsigmoid(lstmencoder->hide[i][d].sig_in[T]);
+				lstmencoder->hide[i][d].tan_diff[T]=trans*lstmencoder->hide[i][d].out_out[T]*difftanh(lstmencoder->hide[i][d].cell[T])*lstmencoder->hide[i][d].sig_out[T]*difftanh(lstmencoder->hide[i][d].tan_in[T]);
+				lstmencoder->hide[i][d].out_diff[T]=trans*tanh(lstmencoder->hide[i][d].cell[T])*diffsigmoid(lstmencoder->hide[i][d].out_in[T]);
+			}
+		for(int i=0;i<HNUM;i++)
+		{
+			trans=0;
+			for(int j=0;j<HNUM;j++)
+				trans+=lstmencoder->hide[j][0].fog_diff[T]*lstmencoder->hide[j][0].fog_wi[i]+lstmencoder->hide[j][0].sig_diff[T]*lstmencoder->hide[j][0].sig_wi[i]+lstmencoder->hide[j][0].tan_diff[T]*lstmencoder->hide[j][0].tan_wi[i]+lstmencoder->hide[j][0].out_diff[T]*lstmencoder->hide[j][0].out_wi[i];
+			lstmencoder->hlink[i].fog_diff[T]=trans*lstmencoder->hlink[i].out_out[T]*difftanh(lstmencoder->hlink[i].cell[T])*lstmencoder->hlink[i].cell[T-1]*diffsigmoid(lstmencoder->hlink[i].fog_in[T]);
+			lstmencoder->hlink[i].sig_diff[T]=trans*lstmencoder->hlink[i].out_out[T]*difftanh(lstmencoder->hlink[i].cell[T])*lstmencoder->hlink[i].tan_out[T]*diffsigmoid(lstmencoder->hlink[i].sig_in[T]);
+			lstmencoder->hlink[i].tan_diff[T]=trans*lstmencoder->hlink[i].out_out[T]*difftanh(lstmencoder->hlink[i].cell[T])*lstmencoder->hlink[i].sig_out[T]*difftanh(lstmencoder->hlink[i].tan_in[T]);
+			lstmencoder->hlink[i].out_diff[T]=trans*tanh(lstmencoder->hlink[i].cell[T])*diffsigmoid(lstmencoder->hlink[i].out_in[T]);
+		}
+		for(int t=T-1;t>=1;t--)
+		{
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+					trans+=lstmencoder->hide[j][DEPTH-1].fog_diff[t+1]*lstmencoder->hide[j][DEPTH-1].fog_wh[i]+lstmencoder->hide[j][DEPTH-1].sig_diff[t+1]*lstmencoder->hide[j][DEPTH-1].sig_wh[i]+lstmencoder->hide[j][DEPTH-1].tan_diff[t+1]*lstmencoder->hide[j][DEPTH-1].tan_wh[i]+lstmencoder->hide[j][DEPTH-1].out_diff[t+1]*lstmencoder->hide[j][DEPTH-1].out_wh[i];
+				lstmencoder->hide[i][DEPTH-1].fog_diff[t]=trans*lstmencoder->hide[i][DEPTH-1].out_out[t]*difftanh(lstmencoder->hide[i][DEPTH-1].cell[t])*lstmencoder->hide[i][DEPTH-1].cell[t-1]*diffsigmoid(lstmencoder->hide[i][DEPTH-1].fog_in[t]);
+				lstmencoder->hide[i][DEPTH-1].sig_diff[t]=trans*lstmencoder->hide[i][DEPTH-1].out_out[t]*difftanh(lstmencoder->hide[i][DEPTH-1].cell[t])*lstmencoder->hide[i][DEPTH-1].tan_out[t]*diffsigmoid(lstmencoder->hide[i][DEPTH-1].sig_in[t]);
+				lstmencoder->hide[i][DEPTH-1].tan_diff[t]=trans*lstmencoder->hide[i][DEPTH-1].out_out[t]*difftanh(lstmencoder->hide[i][DEPTH-1].cell[t])*lstmencoder->hide[i][DEPTH-1].sig_out[t]*difftanh(lstmencoder->hide[i][DEPTH-1].tan_in[t]);
+				lstmencoder->hide[i][DEPTH-1].out_diff[t]=trans*tanh(lstmencoder->hide[i][DEPTH-1].cell[t])*diffsigmoid(lstmencoder->hide[i][DEPTH-1].out_in[t]);
+			}
+			for(int d=DEPTH-2;d>=0;d--)
+				for(int i=0;i<HNUM;i++)
+				{
+					trans=0;
+					for(int j=0;j<HNUM;j++)
+					{
+						trans+=lstmencoder->hide[j][d+1].fog_diff[t]*lstmencoder->hide[j][d+1].fog_wi[i]+lstmencoder->hide[j][d+1].sig_diff[t]*lstmencoder->hide[j][d+1].sig_wi[i]+lstmencoder->hide[j][d+1].tan_diff[t]*lstmencoder->hide[j][d+1].tan_wi[i]+lstmencoder->hide[j][d+1].out_diff[t]*lstmencoder->hide[j][d+1].out_wi[i];
+						trans+=lstmencoder->hide[j][d].fog_diff[t+1]*lstmencoder->hide[j][d].fog_wh[i]+lstmencoder->hide[j][d].sig_diff[t+1]*lstmencoder->hide[j][d].sig_wh[i]+lstmencoder->hide[j][d].tan_diff[t+1]*lstmencoder->hide[j][d].tan_wh[i]+lstmencoder->hide[j][d].out_diff[t+1]*lstmencoder->hide[j][d].out_wh[i];
+					}
+					lstmencoder->hide[i][d].fog_diff[t]=trans*lstmencoder->hide[i][d].out_out[t]*difftanh(lstmencoder->hide[i][d].cell[t])*lstmencoder->hide[i][d].cell[t-1]*diffsigmoid(lstmencoder->hide[i][d].fog_in[t]);
+					lstmencoder->hide[i][d].sig_diff[t]=trans*lstmencoder->hide[i][d].out_out[t]*difftanh(lstmencoder->hide[i][d].cell[t])*lstmencoder->hide[i][d].tan_out[t]*diffsigmoid(lstmencoder->hide[i][d].sig_in[t]);
+					lstmencoder->hide[i][d].tan_diff[t]=trans*lstmencoder->hide[i][d].out_out[t]*difftanh(lstmencoder->hide[i][d].cell[t])*lstmencoder->hide[i][d].sig_out[t]*difftanh(lstmencoder->hide[i][d].tan_in[t]);
+					lstmencoder->hide[i][d].out_diff[t]=trans*tanh(lstmencoder->hide[i][d].cell[t])*diffsigmoid(lstmencoder->hide[i][d].out_in[t]);
+				}
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+				{
+					trans+=lstmencoder->hide[j][0].fog_diff[t]*lstmencoder->hide[j][0].fog_wi[i]+lstmencoder->hide[j][0].sig_diff[t]*lstmencoder->hide[j][0].sig_wi[i]+lstmencoder->hide[j][0].tan_diff[t]*lstmencoder->hide[j][0].tan_wi[i]+lstmencoder->hide[j][0].out_diff[t]*lstmencoder->hide[j][0].out_wi[i];
+					trans+=lstmencoder->hlink[j].fog_diff[t+1]*lstmencoder->hlink[j].fog_wh[i]+lstmencoder->hlink[j].sig_diff[t+1]*lstmencoder->hlink[j].sig_wh[i]+lstmencoder->hlink[j].tan_diff[t+1]*lstmencoder->hlink[j].tan_wh[i]+lstmencoder->hlink[j].out_diff[t+1]*lstmencoder->hlink[j].out_wh[i];
+				}
+				lstmencoder->hlink[i].fog_diff[t]=trans*lstmencoder->hlink[i].out_out[t]*difftanh(lstmencoder->hlink[i].cell[t])*lstmencoder->hlink[i].cell[t-1]*diffsigmoid(lstmencoder->hlink[i].fog_in[t]);
+				lstmencoder->hlink[i].sig_diff[t]=trans*lstmencoder->hlink[i].out_out[t]*difftanh(lstmencoder->hlink[i].cell[t])*lstmencoder->hlink[i].tan_out[t]*diffsigmoid(lstmencoder->hlink[i].sig_in[t]);
+				lstmencoder->hlink[i].tan_diff[t]=trans*lstmencoder->hlink[i].out_out[t]*difftanh(lstmencoder->hlink[i].cell[t])*lstmencoder->hlink[i].sig_out[t]*difftanh(lstmencoder->hlink[i].tan_in[t]);
+				lstmencoder->hlink[i].out_diff[t]=trans*tanh(lstmencoder->hlink[i].cell[t])*diffsigmoid(lstmencoder->hlink[i].out_in[t]);
+			}
+		}
 		
+		for(int i=0;i<HNUM;i++)
+		{
+			lstmencoder->hlink[i].fog_transbia=0;
+			lstmencoder->hlink[i].sig_transbia=0;
+			lstmencoder->hlink[i].tan_transbia=0;
+			lstmencoder->hlink[i].out_transbia=0;
+			for(int j=0;j<INUM;j++)
+			{
+				lstmencoder->hlink[i].fog_transwi[j]=0;
+				lstmencoder->hlink[i].sig_transwi[j]=0;
+				lstmencoder->hlink[i].tan_transwi[j]=0;
+				lstmencoder->hlink[i].out_transwi[j]=0;
+			}
+			for(int j=0;j<HNUM;j++)
+			{
+				lstmencoder->hlink[i].fog_transwh[j]=0;
+				lstmencoder->hlink[i].sig_transwh[j]=0;
+				lstmencoder->hlink[i].tan_transwh[j]=0;
+				lstmencoder->hlink[i].out_transwh[j]=0;
+			}
+		}
+		for(int d=0;d<DEPTH;d++)
+			for(int i=0;i<HNUM;i++)
+			{
+				lstmencoder->hide[i][d].fog_transbia=0;
+				lstmencoder->hide[i][d].sig_transbia=0;
+				lstmencoder->hide[i][d].tan_transbia=0;
+				lstmencoder->hide[i][d].out_transbia=0;
+				for(int j=0;j<HNUM;j++)
+				{
+					lstmencoder->hide[i][d].fog_transwi[j]=0;
+					lstmencoder->hide[i][d].sig_transwi[j]=0;
+					lstmencoder->hide[i][d].tan_transwi[j]=0;
+					lstmencoder->hide[i][d].out_transwi[j]=0;
+					lstmencoder->hide[i][d].fog_transwh[j]=0;
+					lstmencoder->hide[i][d].sig_transwh[j]=0;
+					lstmencoder->hide[i][d].tan_transwh[j]=0;
+					lstmencoder->hide[i][d].out_transwh[j]=0;
+				}
+			}
+		
+		for(int t=1;t<=T;t++)
+		{
+			for(int d=DEPTH-1;d>=0;d--)
+			{
+				for(int i=0;i<HNUM;i++)
+				{
+					lstmencoder->hide[i][d].fog_transbia+=2*lstmencoder->hide[i][d].fog_diff[t];
+					lstmencoder->hide[i][d].sig_transbia+=2*lstmencoder->hide[i][d].sig_diff[t];
+					lstmencoder->hide[i][d].tan_transbia+=2*lstmencoder->hide[i][d].tan_diff[t];
+					lstmencoder->hide[i][d].out_transbia+=2*lstmencoder->hide[i][d].out_diff[t];
+					for(int j=0;j<HNUM;j++)
+					{
+						lstmencoder->hide[i][d].fog_transwh[j]+=lstmencoder->hide[i][d].fog_diff[t]*lstmencoder->hide[j][d].out[t-1];
+						lstmencoder->hide[i][d].sig_transwh[j]+=lstmencoder->hide[i][d].sig_diff[t]*lstmencoder->hide[j][d].out[t-1];
+						lstmencoder->hide[i][d].tan_transwh[j]+=lstmencoder->hide[i][d].tan_diff[t]*lstmencoder->hide[j][d].out[t-1];
+						lstmencoder->hide[i][d].out_transwh[j]+=lstmencoder->hide[i][d].out_diff[t]*lstmencoder->hide[j][d].out[t-1];
+						lstmencoder->hide[i][d].fog_transwi[j]+=lstmencoder->hide[i][d].fog_diff[t]*(d>0? lstmencoder->hide[j][d-1].out[t]:lstmencoder->hlink[j].out[t]);
+						lstmencoder->hide[i][d].sig_transwi[j]+=lstmencoder->hide[i][d].sig_diff[t]*(d>0? lstmencoder->hide[j][d-1].out[t]:lstmencoder->hlink[j].out[t]);
+						lstmencoder->hide[i][d].tan_transwi[j]+=lstmencoder->hide[i][d].tan_diff[t]*(d>0? lstmencoder->hide[j][d-1].out[t]:lstmencoder->hlink[j].out[t]);
+						lstmencoder->hide[i][d].out_transwi[j]+=lstmencoder->hide[i][d].out_diff[t]*(d>0? lstmencoder->hide[j][d-1].out[t]:lstmencoder->hlink[j].out[t]);
+					}
+				}
+			}
+			for(int i=0;i<HNUM;i++)
+			{
+				lstmencoder->hlink[i].fog_transbia+=2*lstmencoder->hlink[i].fog_diff[t];
+				lstmencoder->hlink[i].sig_transbia+=2*lstmencoder->hlink[i].sig_diff[t];
+				lstmencoder->hlink[i].tan_transbia+=2*lstmencoder->hlink[i].tan_diff[t];
+				lstmencoder->hlink[i].out_transbia+=2*lstmencoder->hlink[i].out_diff[t];
+				for(int j=0;j<HNUM;j++)
+				{
+					lstmencoder->hlink[i].fog_transwh[j]+=lstmencoder->hlink[i].fog_diff[t]*lstmencoder->hlink[j].out[t-1];
+					lstmencoder->hlink[i].sig_transwh[j]+=lstmencoder->hlink[i].sig_diff[t]*lstmencoder->hlink[j].out[t-1];
+					lstmencoder->hlink[i].tan_transwh[j]+=lstmencoder->hlink[i].tan_diff[t]*lstmencoder->hlink[j].out[t-1];
+					lstmencoder->hlink[i].out_transwh[j]+=lstmencoder->hlink[i].out_diff[t]*lstmencoder->hlink[j].out[t-1];
+				}
+				for(int j=0;j<INUM;j++)
+				{
+					lstmencoder->hlink[i].fog_transwi[j]+=lstmencoder->hlink[i].fog_diff[t]*expect[j];//output[j].out;
+					lstmencoder->hlink[i].sig_transwi[j]+=lstmencoder->hlink[i].sig_diff[t]*expect[j];//output[j].out;
+					lstmencoder->hlink[i].tan_transwi[j]+=lstmencoder->hlink[i].tan_diff[t]*expect[j];//output[j].out;
+					lstmencoder->hlink[i].out_transwi[j]+=lstmencoder->hlink[i].out_diff[t]*expect[j];//output[j].out;
+				}
+			}
+		}
+	
+		for(int i=0;i<HNUM;i++)
+		{
+			lstmencoder->hlink[i].fog_bia+=ClipGradient(learningrate*lstmencoder->hlink[i].fog_transbia);
+			lstmencoder->hlink[i].sig_bia+=ClipGradient(learningrate*lstmencoder->hlink[i].sig_transbia);
+			lstmencoder->hlink[i].tan_bia+=ClipGradient(learningrate*lstmencoder->hlink[i].tan_transbia);
+			lstmencoder->hlink[i].out_bia+=ClipGradient(learningrate*lstmencoder->hlink[i].out_transbia);
+			for(int j=0;j<INUM;j++)
+			{
+				lstmencoder->hlink[i].fog_wi[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].fog_transwi[j]);
+				lstmencoder->hlink[i].sig_wi[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].sig_transwi[j]);
+				lstmencoder->hlink[i].tan_wi[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].tan_transwi[j]);
+				lstmencoder->hlink[i].out_wi[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].out_transwi[j]);
+			}
+			for(int j=0;j<HNUM;j++)
+			{
+				lstmencoder->hlink[i].fog_wh[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].fog_transwh[j]);
+				lstmencoder->hlink[i].sig_wh[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].sig_transwh[j]);
+				lstmencoder->hlink[i].tan_wh[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].tan_transwh[j]);
+				lstmencoder->hlink[i].out_wh[j]+=ClipGradient(learningrate*lstmencoder->hlink[i].out_transwh[j]);
+			}
+		}
+		for(int d=0;d<DEPTH;d++)
+		{
+				for(int i=0;i<HNUM;i++)
+				{
+					lstmencoder->hide[i][d].fog_bia+=ClipGradient(learningrate*lstmencoder->hide[i][d].fog_transbia);
+					lstmencoder->hide[i][d].sig_bia+=ClipGradient(learningrate*lstmencoder->hide[i][d].sig_transbia);
+					lstmencoder->hide[i][d].tan_bia+=ClipGradient(learningrate*lstmencoder->hide[i][d].tan_transbia);
+					lstmencoder->hide[i][d].out_bia+=ClipGradient(learningrate*lstmencoder->hide[i][d].out_transbia);
+					for(int j=0;j<HNUM;j++)
+					{
+						lstmencoder->hide[i][d].fog_wi[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].fog_transwi[j]);
+						lstmencoder->hide[i][d].sig_wi[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].sig_transwi[j]);
+						lstmencoder->hide[i][d].tan_wi[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].tan_transwi[j]);
+						lstmencoder->hide[i][d].out_wi[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].out_transwi[j]);
+						lstmencoder->hide[i][d].fog_wh[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].fog_transwh[j]);
+						lstmencoder->hide[i][d].sig_wh[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].sig_transwh[j]);
+						lstmencoder->hide[i][d].tan_wh[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].tan_transwh[j]);
+						lstmencoder->hide[i][d].out_wh[j]+=ClipGradient(learningrate*lstmencoder->hide[i][d].out_transwh[j]);
+					}
+				}
+		}
+		for(int i=0;i<ONUM;i++)
+		{
+			output[i].bia+=ClipGradient(learningrate*output[i].diff);
+			for(int j=0;j<HNUM;j++)
+				output[i].w[j]+=ClipGradient(learningrate*output[i].diff*lstmencoder->hide[j][DEPTH-1].out[T]);
+		}
+		return;
 	}
 	else if(__Typename=="gru")
 	{
+		double trans;
+		for(int t=0;t<=T;t++)
+			for(int i=0;i<ONUM;i++)
+				output[i].diff=expect[i]-output[i].out;
+		for(int i=0;i<ONUM;i++)
+			output[i].diff*=output[i].out*(1-output[i].out);
+		for(int d=DEPTH-1;d>=0;d--)
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				if(d==DEPTH-1)
+					for(int j=0;j<ONUM;j++)
+						trans+=output[j].diff*output[j].w[i];
+				else
+					for(int j=0;j<HNUM;j++)
+						trans+=gruencoder->hide[j][d+1].sig_update_diff[T]*gruencoder->hide[j][d+1].sig_update_wi[i]+gruencoder->hide[j][d+1].sig_replace_diff[T]*gruencoder->hide[j][d+1].sig_replace_wi[i]+gruencoder->hide[j][d+1].tan_replace_diff[T]*gruencoder->hide[j][d+1].tan_replace_wi[i];
+				gruencoder->hide[i][d].sig_update_diff[T]=trans*(1-gruencoder->hide[i][d].sig_replace_out[T])*difftanh(gruencoder->hide[i][d].tan_replace_in[T])*gruencoder->hide[i][d].tan_replace_wh[i]*gruencoder->hide[i][d].out[T-1]*diffsigmoid(gruencoder->hide[i][d].sig_update_in[T]);
+				gruencoder->hide[i][d].sig_replace_diff[T]=trans*(gruencoder->hide[i][d].out[T-1]-gruencoder->hide[i][d].tan_replace_out[T])*diffsigmoid(gruencoder->hide[i][d].sig_replace_in[T]);
+				gruencoder->hide[i][d].tan_replace_diff[T]=trans*(1-gruencoder->hide[i][d].sig_replace_out[T])*difftanh(gruencoder->hide[i][d].tan_replace_in[T]);
+			}
+		for(int i=0;i<HNUM;i++)
+		{
+			trans=0;
+			for(int j=0;j<HNUM;j++)
+				trans+=gruencoder->hide[j][0].sig_update_diff[T]*gruencoder->hide[j][0].sig_update_wi[i]+gruencoder->hide[j][0].sig_replace_diff[T]*gruencoder->hide[j][0].sig_replace_wi[i]+gruencoder->hide[j][0].tan_replace_diff[T]*gruencoder->hide[j][0].tan_replace_wi[i];
+			gruencoder->hlink[i].sig_update_diff[T]=trans*(1-gruencoder->hlink[i].sig_replace_out[T])*difftanh(gruencoder->hlink[i].tan_replace_in[T])*gruencoder->hlink[i].tan_replace_wh[i]*gruencoder->hlink[i].out[T-1]*diffsigmoid(gruencoder->hlink[i].sig_update_in[T]);
+			gruencoder->hlink[i].sig_replace_diff[T]=trans*(gruencoder->hlink[i].out[T-1]-gruencoder->hlink[i].tan_replace_out[T])*diffsigmoid(gruencoder->hlink[i].sig_replace_in[T]);
+			gruencoder->hlink[i].tan_replace_diff[T]=trans*(1-gruencoder->hlink[i].sig_replace_out[T])*difftanh(gruencoder->hlink[i].tan_replace_in[T]);
+		}
+		for(int t=T-1;t>=1;t--)
+		{
+			for(int d=DEPTH-1;d>=0;d--)
+				for(int i=0;i<HNUM;i++)
+				{
+					trans=0;
+					if(d==DEPTH-1)
+						;
+					else
+						for(int j=0;j<HNUM;j++)
+							trans+=gruencoder->hide[j][d+1].sig_update_diff[t]*gruencoder->hide[j][d+1].sig_update_wi[i]+gruencoder->hide[j][d+1].sig_replace_diff[t]*gruencoder->hide[j][d+1].sig_replace_wi[i]+gruencoder->hide[j][d+1].tan_replace_diff[t]*gruencoder->hide[j][d+1].tan_replace_wi[i];
+					gruencoder->hide[i][d].sig_update_diff[t]=trans*(1-gruencoder->hide[i][d].sig_replace_out[t])*difftanh(gruencoder->hide[i][d].tan_replace_in[t])*gruencoder->hide[i][d].tan_replace_wh[i]*gruencoder->hide[i][d].out[t-1]*diffsigmoid(gruencoder->hide[i][d].sig_update_in[t]);
+					gruencoder->hide[i][d].sig_replace_diff[t]=trans*(gruencoder->hide[i][d].out[t-1]-gruencoder->hide[i][d].tan_replace_out[t])*diffsigmoid(gruencoder->hide[i][d].sig_replace_in[t]);
+					gruencoder->hide[i][d].tan_replace_diff[t]=trans*(1-gruencoder->hide[i][d].sig_replace_out[t])*difftanh(gruencoder->hide[i][d].tan_replace_in[t]);
+				}
+			for(int i=0;i<HNUM;i++)
+			{
+				trans=0;
+				for(int j=0;j<HNUM;j++)
+					trans+=gruencoder->hide[j][0].sig_update_diff[t]*gruencoder->hide[j][0].sig_update_wi[i]+gruencoder->hide[j][0].sig_replace_diff[t]*gruencoder->hide[j][0].sig_replace_wi[i]+gruencoder->hide[j][0].tan_replace_diff[t]*gruencoder->hide[j][0].tan_replace_wi[i];
+				for(int j=0;j<HNUM;j++)
+					trans+=gruencoder->hlink[j].sig_update_diff[t+1]*gruencoder->hlink[j].sig_update_wh[i]+gruencoder->hlink[j].sig_replace_diff[t+1]*gruencoder->hlink[j].sig_replace_wh[i]+gruencoder->hlink[j].tan_replace_diff[t+1]*gruencoder->hlink[j].tan_replace_wh[i]*gruencoder->hlink[i].sig_replace_out[t+1];
+	
+				gruencoder->hlink[i].sig_update_diff[t]=trans*(1-gruencoder->hlink[i].sig_replace_out[t])*difftanh(gruencoder->hlink[i].tan_replace_in[t])*gruencoder->hlink[i].tan_replace_wh[i]*gruencoder->hlink[i].out[t-1]*diffsigmoid(gruencoder->hlink[i].sig_update_in[t]);
+				gruencoder->hlink[i].sig_replace_diff[t]=trans*(gruencoder->hlink[i].out[t-1]-gruencoder->hlink[i].tan_replace_out[t])*diffsigmoid(gruencoder->hlink[i].sig_replace_in[t]);
+				gruencoder->hlink[i].tan_replace_diff[t]=trans*(1-gruencoder->hlink[i].sig_replace_out[t])*difftanh(gruencoder->hlink[i].tan_replace_in[t]);
+			}
+		}
 		
+		for(int d=0;d<DEPTH;d++)
+			for(int i=0;i<HNUM;i++)
+			{
+				gruencoder->hide[i][d].sig_update_transbia=0;
+				gruencoder->hide[i][d].sig_replace_transbia=0;
+				gruencoder->hide[i][d].tan_replace_transbia=0;
+				for(int j=0;j<INUM;j++)
+				{
+					gruencoder->hide[i][d].sig_update_transwi[j]=0;
+					gruencoder->hide[i][d].sig_replace_transwi[j]=0;
+					gruencoder->hide[i][d].tan_replace_transwi[j]=0;
+				}
+				for(int j=0;j<HNUM;j++)
+				{
+					gruencoder->hide[i][d].sig_update_transwh[j]=0;
+					gruencoder->hide[i][d].sig_replace_transwh[j]=0;
+					gruencoder->hide[i][d].tan_replace_transwh[j]=0;
+				}
+			}
+		for(int i=0;i<HNUM;i++)
+		{
+			gruencoder->hlink[i].sig_update_transbia=0;
+			gruencoder->hlink[i].sig_replace_transbia=0;
+			gruencoder->hlink[i].tan_replace_transbia=0;
+			for(int j=0;j<INUM;j++)
+			{
+				gruencoder->hlink[i].sig_update_transwi[j]=0;
+				gruencoder->hlink[i].sig_replace_transwi[j]=0;
+				gruencoder->hlink[i].tan_replace_transwi[j]=0;
+			}
+			for(int j=0;j<HNUM;j++)
+			{
+				gruencoder->hlink[i].sig_update_transwh[j]=0;
+				gruencoder->hlink[i].sig_replace_transwh[j]=0;
+				gruencoder->hlink[i].tan_replace_transwh[j]=0;
+			}
+		}
+		for(int t=1;t<=T;t++)
+		{
+			for(int d=0;d<DEPTH;d++)
+				for(int i=0;i<HNUM;i++)
+				{
+					gruencoder->hide[i][d].sig_update_transbia+=2*gruencoder->hide[i][d].sig_update_diff[t];
+					gruencoder->hide[i][d].sig_replace_transbia+=2*gruencoder->hide[i][d].sig_replace_diff[t];
+					gruencoder->hide[i][d].tan_replace_transbia+=2*gruencoder->hide[i][d].tan_replace_diff[t];
+					for(int j=0;j<HNUM;j++)
+					{
+						gruencoder->hide[i][d].sig_update_transwh[j]+=gruencoder->hide[i][d].sig_update_diff[t]*gruencoder->hide[j][d].out[t-1];
+						gruencoder->hide[i][d].sig_replace_transwh[j]+=gruencoder->hide[i][d].sig_replace_diff[t]*gruencoder->hide[j][d].sig_replace_out[t]*gruencoder->hide[j][d].out[t-1];
+						gruencoder->hide[i][d].tan_replace_transwh[j]+=gruencoder->hide[i][d].tan_replace_diff[t]*gruencoder->hide[j][d].out[t-1];
+					}
+					for(int j=0;j<INUM;j++)
+					{
+						gruencoder->hide[i][d].sig_update_transwi[j]+=gruencoder->hide[i][d].sig_update_diff[t]*(d==0? gruencoder->hlink[j].out[t]:gruencoder->hide[j][d-1].out[t]);
+						gruencoder->hide[i][d].sig_replace_transwi[j]+=gruencoder->hide[i][d].sig_replace_diff[t]*(d==0? gruencoder->hlink[j].out[t]:gruencoder->hide[j][d-1].out[t]);
+						gruencoder->hide[i][d].tan_replace_transwi[j]+=gruencoder->hide[i][d].tan_replace_diff[t]*(d==0? gruencoder->hlink[j].out[t]:gruencoder->hide[j][d-1].out[t]);
+					}
+				}
+			for(int i=0;i<HNUM;i++)
+			{
+				gruencoder->hlink[i].sig_update_transbia+=2*gruencoder->hlink[i].sig_update_diff[t];
+				gruencoder->hlink[i].sig_replace_transbia+=2*gruencoder->hlink[i].sig_replace_diff[t];
+				gruencoder->hlink[i].tan_replace_transbia+=2*gruencoder->hlink[i].tan_replace_diff[t];
+				for(int j=0;j<HNUM;j++)
+				{
+					gruencoder->hlink[i].sig_update_transwh[j]+=gruencoder->hlink[i].sig_update_diff[t]*gruencoder->hlink[j].out[t-1];//(gruencoder->hlink[j].out[t-1]+hiddenstate[j][t]);
+					gruencoder->hlink[i].sig_replace_transwh[j]+=gruencoder->hlink[i].sig_replace_diff[t]*gruencoder->hlink[j].sig_replace_out[t]*gruencoder->hlink[j].out[t-1];//(gruencoder->hlink[j].out[t-1]+hiddenstate[j][t]);
+					gruencoder->hlink[i].tan_replace_transwh[j]+=gruencoder->hlink[i].tan_replace_diff[t]*gruencoder->hlink[j].out[t-1];//(gruencoder->hlink[j].out[t-1]+hiddenstate[j][t]);
+				}
+				for(int j=0;j<INUM;j++)
+				{
+					gruencoder->hlink[i].sig_update_transwi[j]+=gruencoder->hlink[i].sig_update_diff[t]*expect[j];//output[j].out;
+					gruencoder->hlink[i].sig_replace_transwi[j]+=gruencoder->hlink[i].sig_replace_diff[t]*expect[j];//output[j].out;
+					gruencoder->hlink[i].tan_replace_transwi[j]+=gruencoder->hlink[i].tan_replace_diff[t]*expect[j];//output[j].out;
+				}
+			}
+		}
+		for(int d=0;d<DEPTH-1;d++)
+			for(int i=0;i<HNUM;i++)
+			{
+				gruencoder->hide[i][d].sig_update_bia+=ClipGradient(learningrate*gruencoder->hide[i][d].sig_update_transbia);
+				gruencoder->hide[i][d].sig_replace_bia+=ClipGradient(learningrate*gruencoder->hide[i][d].sig_replace_transbia);
+				gruencoder->hide[i][d].tan_replace_bia+=ClipGradient(learningrate*gruencoder->hide[i][d].tan_replace_transbia);
+				for(int j=0;j<HNUM;j++)
+				{
+					gruencoder->hide[i][d].sig_update_wi[j]+=ClipGradient(learningrate*gruencoder->hide[i][d].sig_update_transwi[j]);
+					gruencoder->hide[i][d].sig_replace_wi[j]+=ClipGradient(learningrate*gruencoder->hide[i][d].sig_replace_transwi[j]);
+					gruencoder->hide[i][d].tan_replace_wi[j]+=ClipGradient(learningrate*gruencoder->hide[i][d].tan_replace_transwi[j]);
+	
+					gruencoder->hide[i][d].sig_update_wh[j]+=ClipGradient(learningrate*gruencoder->hide[i][d].sig_update_transwh[j]);
+					gruencoder->hide[i][d].sig_replace_wh[j]+=ClipGradient(learningrate*gruencoder->hide[i][d].sig_replace_transwh[j]);
+					gruencoder->hide[i][d].tan_replace_wh[j]+=ClipGradient(learningrate*gruencoder->hide[i][d].tan_replace_transwh[j]);
+				}
+			}
+		for(int i=0;i<HNUM;i++)
+		{
+			gruencoder->hlink[i].sig_update_bia+=ClipGradient(learningrate*gruencoder->hlink[i].sig_update_transbia);
+			gruencoder->hlink[i].sig_replace_bia+=ClipGradient(learningrate*gruencoder->hlink[i].sig_replace_transbia);
+			gruencoder->hlink[i].tan_replace_bia+=ClipGradient(learningrate*gruencoder->hlink[i].tan_replace_transbia);
+			for(int j=0;j<INUM;j++)
+			{
+				gruencoder->hlink[i].sig_update_wi[j]+=ClipGradient(learningrate*gruencoder->hlink[i].sig_update_transwi[j]);
+				gruencoder->hlink[i].sig_replace_wi[j]+=ClipGradient(learningrate*gruencoder->hlink[i].sig_replace_transwi[j]);
+				gruencoder->hlink[i].tan_replace_wi[j]+=ClipGradient(learningrate*gruencoder->hlink[i].tan_replace_transwi[j]);
+			}
+			for(int j=0;j<HNUM;j++)
+			{
+				gruencoder->hlink[i].sig_update_wh[j]+=ClipGradient(learningrate*gruencoder->hlink[i].sig_update_transwh[j]);
+				gruencoder->hlink[i].sig_replace_wh[j]+=ClipGradient(learningrate*gruencoder->hlink[i].sig_replace_transwh[j]);
+				gruencoder->hlink[i].tan_replace_wh[j]+=ClipGradient(learningrate*gruencoder->hlink[i].tan_replace_transwh[j]);
+			}
+		}
+		for(int i=0;i<ONUM;i++)
+		{
+			output[i].bia+=ClipGradient(learningrate*output[i].diff);
+			for(int j=0;j<HNUM;j++)
+				output[i].w[j]+=ClipGradient(learningrate*output[i].diff*gruencoder->hide[j][DEPTH-1].out[T]);
+		}
+		return;
 	}
 	else
 	{
-		cout<<"Unexpected error occurred..."<<endl;
-		cout<<"[Error]Unknown neural network name."<<endl;
+		cout<<"easyNLP>>[Error]Unknown neural network name."<<endl;
 		exit(0);
 	}
 }
