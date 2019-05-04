@@ -1,5 +1,5 @@
 /*bpfunction.h header file made by ValK*/
-/*2019/3/24                 version 0.2*/
+/*2019/5/5                  version 1.0*/
 #ifndef __BPFUNCTION_H__
 #define __BPFUNCTION_H__
 
@@ -15,6 +15,7 @@ using namespace std;
 NormalBP::NormalBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num)
 {
 	error=1e8;
+	learningrate=0;
 	func_name="Unknown";
 	INUM=inputlayer_num;
 	HNUM=hiddenlayer_num;
@@ -29,6 +30,7 @@ NormalBP::NormalBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num)
 	for(int i=0;i<ONUM;i++)
 		output[i].w=new double[HNUM];
 }
+
 NormalBP::~NormalBP()
 {
 	for(int i=0;i<HNUM;i++)
@@ -40,12 +42,13 @@ NormalBP::~NormalBP()
 	delete []input;
 	delete []expect;
 }
+
 double NormalBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Error occured..."<<endl;
-		cout<<"You haven't chose a correct funtion.";
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -58,13 +61,20 @@ double NormalBP::ActivateFunction(double x)
 		return leakyrelu(x);
 	else if(func_name=="elu")
 		return elu(x);
+	else
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
+		exit(0);
+	}
 }
+
 double NormalBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Error occured..."<<endl;
-		cout<<"You haven't chose a correct funtion.";
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -77,7 +87,14 @@ double NormalBP::DiffFunction(double x)
 		return diffleakyrelu(x);
 	else if(func_name=="elu")
 		return diffelu(x);
+	else
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
+		exit(0);
+	}
 }
+
 void NormalBP::INIT()
 {
 	srand(unsigned(time(NULL)));
@@ -95,6 +112,7 @@ void NormalBP::INIT()
 	}
 	return;
 }
+
 void NormalBP::Calc()
 {
 	for(int i=0;i<HNUM;i++)
@@ -113,6 +131,7 @@ void NormalBP::Calc()
 	}
 	return;
 }
+
 void NormalBP::ErrorCalc()
 {
 	double trans;
@@ -125,10 +144,17 @@ void NormalBP::ErrorCalc()
 	error*=0.5;
 	return;
 }
+
 double NormalBP::GetError()
 {
 	return error;
 }
+
+void NormalBP::SetLearningrate(double __lr)
+{
+	learningrate=__lr;
+}
+
 void NormalBP::Training()
 {
 	for(int i=0;i<ONUM;i++)
@@ -155,13 +181,14 @@ void NormalBP::Training()
 	}
 	return;
 }
-void NormalBP::Datain(const char*FILENAME)
+
+void NormalBP::Datain(const char* FILENAME)
 {
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
 		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"[Error]Cannot open file."<<endl;
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -178,13 +205,14 @@ void NormalBP::Datain(const char*FILENAME)
 	}
 	fin.close();
 }
-void NormalBP::Dataout(const char*FILENAME)
+
+void NormalBP::Dataout(const char* FILENAME)
 {
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
 		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"[Error]Cannot open file."<<endl;
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -200,15 +228,68 @@ void NormalBP::Dataout(const char*FILENAME)
 			fout<<output[i].w[j]<<endl;
 	}
 	fout.close();
+	cout<<"easyNLP>>Output finished"<<endl;
 }
-void NormalBP::SetFunction(const char*function_name)
+
+void NormalBP::SetFunction(const char* function_name)
 {
 	func_name=function_name;
+}
+
+void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,const char *TrainingdataName)
+{
+	if(!fopen(dataFilename,"r"))
+	{
+		INIT();
+		Dataout(dataFilename);
+		cout<<"easyNLP>>[NormalBP] Initializing completed.\n";
+	}
+	else
+		Datain(dataFilename);
+	double maxerror=1e8;
+	int epoch=0;
+	while(maxerror>0.01)
+	{
+		epoch++;
+		maxerror=0;
+		ifstream finq(QuestiondataName);
+		ifstream fint(TrainingdataName);
+		if(finq.fail()||fint.fail())
+		{
+			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			system("pause");
+			exit(0);
+		}
+		for(int b=0;b<batch_size;b++)
+		{
+			for(int i=0;i<INUM;i++)
+				finq>>input[i];
+			for(int i=0;i<ONUM;i++)
+				fint>>expect[i];
+			Calc();
+			ErrorCalc();
+			Training();
+			maxerror+=error;
+		}
+		finq.close();
+		fint.close();
+		if(epoch%10==0)
+		{
+			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			if(epoch%50==0)
+				Dataout(dataFilename);
+		}
+	}
+	cout<<"easyNLP>>Final output in progress..."<<endl;
+	Dataout(dataFilename);
+	cout<<"easyNLP>>Training complete."<<endl;
+	return;
 }
 
 DeepBP::DeepBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num,int depth)
 {
 	error=1e8;
+	learningrate=0;
 	func_name="Unknown";
 	INUM=inputlayer_num;
 	HNUM=hiddenlayer_num;
@@ -230,6 +311,7 @@ DeepBP::DeepBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num,int de
 	for(int i=0;i<ONUM;i++)
 		output[i].w=new double[HNUM];
 }
+
 DeepBP::~DeepBP()
 {
 	delete []input;
@@ -247,12 +329,13 @@ DeepBP::~DeepBP()
 	delete []hide;
 	delete []output;
 }
+
 double DeepBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Error occured..."<<endl;
-		cout<<"You haven't chose a correct funtion.";
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -265,13 +348,20 @@ double DeepBP::ActivateFunction(double x)
 		return leakyrelu(x);
 	else if(func_name=="elu")
 		return elu(x);
+	else
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
+		exit(0);
+	}
 }
+
 double DeepBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Error occured..."<<endl;
-		cout<<"You haven't chose a correct funtion.";
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -284,31 +374,39 @@ double DeepBP::DiffFunction(double x)
 		return diffleakyrelu(x);
 	else if(func_name=="elu")
 		return diffelu(x);
+	else
+	{
+		cout<<"Unexpected error occured..."<<endl;
+		cout<<"[Error]You haven't chose a correct funtion.";
+		exit(0);
+	}
 }
+
 void DeepBP::INIT()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
 	{
-		hlink[i].bia=(1+rand()%10)/20.0;
+		hlink[i].bia=(1+rand()%10)/10.0;
 		for(int j=0;j<INUM;j++)
 			hlink[i].w[j]=(1+rand()%10)/50.0;
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
-			hide[i][d].bia=(1+rand()%10)/20.0;
+			hide[i][d].bia=(1+rand()%10)/10.0;
 			for(int j=0;j<HNUM;j++)
 				hide[i][d].w[j]=(1+rand()%10)/50.0;
 		}
 	for(int i=0;i<ONUM;i++)
 	{
-		output[i].bia=(1+rand()%10)/20.0;
+		output[i].bia=(1+rand()%10)/10.0;
 		for(int j=0;j<HNUM;j++)
 			output[i].w[j]=(1+rand()%10)/50.0;
 	}
 	return;
 }
+
 void DeepBP::Calc()
 {
 	for(int i=0;i<HNUM;i++)
@@ -335,6 +433,7 @@ void DeepBP::Calc()
 	}
 	return;
 }
+
 void DeepBP::ErrorCalc()
 {
 	double trans;
@@ -347,10 +446,17 @@ void DeepBP::ErrorCalc()
 	error*=0.5;
 	return;
 }
+
 double DeepBP::GetError()
 {
 	return error;
 }
+
+void DeepBP::SetLearningrate(double __lr)
+{
+	learningrate=__lr;
+}
+
 void DeepBP::Training()
 {
 	for(int i=0;i<ONUM;i++)
@@ -399,13 +505,14 @@ void DeepBP::Training()
 	}
 	return;
 }
-void DeepBP::Datain(const char*FILENAME)
+
+void DeepBP::Datain(const char* FILENAME)
 {
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
 		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"[Error]Cannot open file."<<endl;
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -429,13 +536,14 @@ void DeepBP::Datain(const char*FILENAME)
 	}
 	fin.close();
 }
-void DeepBP::Dataout(const char*FILENAME)
+
+void DeepBP::Dataout(const char* FILENAME)
 {
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
 		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"[Error]Cannot open file."<<endl;
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -458,9 +566,62 @@ void DeepBP::Dataout(const char*FILENAME)
 			fout<<output[i].w[j]<<endl;
 	}
 	fout.close();
+	cout<<"easyNLP>>Output finished"<<endl;
 }
-void DeepBP::SetFunction(const char*function_name)
+
+void DeepBP::SetFunction(const char* function_name)
 {
 	func_name=function_name;
 }
+
+void DeepBP::TotalWork(const char* dataFilename,const char *QuestiondataName,const char *TrainingdataName)
+{
+	if(!fopen(dataFilename,"r"))
+	{
+		INIT();
+		Dataout(dataFilename);
+		cout<<"easyNLP>>[DeepBP] Initializing completed.\n";
+	}
+	else
+		Datain(dataFilename);
+	double maxerror=1e8;
+	int epoch=0;
+	while(maxerror>0.01)
+	{
+		epoch++;
+		maxerror=0;
+		ifstream finq(QuestiondataName);
+		ifstream fint(TrainingdataName);
+		if(finq.fail()||fint.fail())
+		{
+			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			system("pause");
+			exit(0);
+		}
+		for(int b=0;b<batch_size;b++)
+		{
+			for(int i=0;i<INUM;i++)
+				finq>>input[i];
+			for(int i=0;i<ONUM;i++)
+				fint>>expect[i];
+			Calc();
+			ErrorCalc();
+			Training();
+			maxerror+=error;
+		}
+		finq.close();
+		fint.close();
+		if(epoch%10==0)
+		{
+			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			if(epoch%50==0)
+				Dataout(dataFilename);
+		}
+	}
+	cout<<"easyNLP>>Final output in progress..."<<endl;
+	Dataout(dataFilename);
+	cout<<"easyNLP>>Training complete."<<endl;
+	return;
+}
+
 #endif
