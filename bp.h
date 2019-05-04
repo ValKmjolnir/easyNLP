@@ -1,5 +1,5 @@
 /*bp.h header file made by ValK*/
-/*2019/3/24         version 0.2*/
+/*2019/5/5          version 1.0*/
 #ifndef __BP_H__
 #define __BP_H__
 
@@ -44,6 +44,8 @@ class NormalBP
 		void Datain(const char*);
 		void Dataout(const char*);
 		void SetFunction(const char*);
+		void SetLearningrate(double);
+		void TotalWork(const char*,const char*,const char*);
 };
 class DeepBP
 {
@@ -74,6 +76,8 @@ class DeepBP
 		void Datain(const char*);
 		void Dataout(const char*);
 		void SetFunction(const char*);
+		void SetLearningrate(double);
+		void TotalWork(const char*,const char*,const char*);
 };
 
 #include "bpfunction.h"
