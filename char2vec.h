@@ -1,5 +1,5 @@
 /*char2vec.h header file made by valk*/
-/*2019/4/27               version 1.0*/
+/*2019/5/2               version 1.1*/
 #ifndef __CHAR2VEC_H__
 #define __CHAR2VEC_H__
 #include<iostream>
@@ -40,7 +40,7 @@ class Char2Vec
 				hide[i].w=new double[INUM];
 			for(int i=0;i<ONUM;i++)
 				output[i].w=new double[HNUM];
-			
+
 			srand(unsigned(time(NULL)));
 			for(int i=0;i<HNUM;i++)
 			{
@@ -58,10 +58,16 @@ class Char2Vec
 		}
 		~Char2Vec()
 		{
+			for(int i=0;i<95;i++)
+				delete []cnt[i];
 			delete []cnt;
 			delete []expect;
 			delete []input;
+			for(int i=0;i<HNUM;i++)
+				delete []hide[i].w;
 			delete []hide;
+			for(int i=0;i<ONUM;i++)
+				delete []output[i].w;
 			delete []output;
 		}
 		void TotalWork(const char*,const char*);
@@ -80,7 +86,7 @@ void Char2Vec::TotalWork(const char *dataFilename,const char *TrainingdataName)
 	if(!fopen(dataFilename,"r"))
 	{
 		Dataout(dataFilename);
-		cout<<"[easyNLP]>>[Char2Vec-95char] Initializing completed.\n";
+		cout<<"easyNLP>>[Char2Vec-95char] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -88,6 +94,7 @@ void Char2Vec::TotalWork(const char *dataFilename,const char *TrainingdataName)
 	Mainwork(dataFilename);
 	Print();
 }
+
 void Char2Vec::Mainwork(const char *Filename)
 {
 	int epoch=0;
@@ -118,14 +125,14 @@ void Char2Vec::Mainwork(const char *Filename)
 		}
 		if(epoch%10==0)
 		{
-			cout<<"[easyNLP]>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
 			if(epoch%50==0)
 				Dataout(Filename);
 		}
 	}
-	cout<<"[easyNLP]>>Final output in progress..."<<endl;
+	cout<<"easyNLP>>Final output in progress..."<<endl;
 	Dataout(Filename);
-	cout<<"[easyNLP]>>Training complete."<<endl;
+	cout<<"easyNLP>>Training complete."<<endl;
 	return;
 }
 void Char2Vec::Calc()
@@ -178,7 +185,7 @@ void Char2Vec::Datain(const char *Filename)
 	ifstream fin(Filename);
 	if(fin.fail())
 	{
-		cout<<"[easyNLP][Error]Cannot open data file!"<<endl;
+		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
 		system("pause");
 		exit(0);
 	}
@@ -202,7 +209,7 @@ void Char2Vec::Dataout(const char *Filename)
 	ofstream fout(Filename);
 	if(fout.fail())
 	{
-		cout<<"[easyNLP][Error]Cannot open data file!"<<endl;
+		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
 		system("pause");
 		exit(0);
 	}
@@ -219,12 +226,12 @@ void Char2Vec::Dataout(const char *Filename)
 			fout<<output[i].w[j]<<endl;
 	}
 	fout.close();
-	cout<<"[easyNLP]>>Output Finished.\n";
+	cout<<"easyNLP>>Output Finished.\n";
 	return;
 }
 void Char2Vec::Print()
 {
-	cout<<"[easyNLP]>>[Result-Char2Vec-95char]"<<endl;
+	cout<<"easyNLP>>[Result-Char2Vec-95char]"<<endl;
 	for(int i=0;i<95;i++)
 	{
 		for(int j=0;j<INUM;j++)
@@ -248,7 +255,7 @@ void Char2Vec::CountChar(const char *Filename)
 	ifstream fin(Filename);
 	if(fin.fail())
 	{
-		cout<<"[easyNLP][Error]Cannot open data file!"<<endl;
+		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
 		system("pause");
 		exit(0);
 	}
@@ -270,7 +277,7 @@ void Char2Vec::CharDataIllustration(const char* Filename)
 	fstream fout(Filename,ios::out);
 	if(fout.fail())
 	{
-		cout<<"[easyNLP][Error]Cannot open data file!"<<endl;
+		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
 		system("pause");
 		exit(0);
 	}
