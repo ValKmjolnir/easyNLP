@@ -1,11 +1,11 @@
 # easyNLP
-Do NLP without coding!
+Do NLP without coding(or you may use the headers to create your own model)!
 
-In this programme i will use dynamic arrays to complete neural networks which can do NLP tasks.
+In this programme i will use dynamic arrays to make neural networks which can do NLP tasks.
 
 And this is a C/C++ project.
 
-To avoid someone copying the code to just finish the classwork,i will only update some parts of the programme.After the deadline i'll update all the code.By that time you can use it to train a model without writing codes or use these header files and models to help you write your own model!
+After 2019/5/11 I'll set easyNLP_main to public.
 
 Total:8631 lines
 
