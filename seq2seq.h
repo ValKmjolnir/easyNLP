@@ -1,5 +1,5 @@
 /*seq2seq.h header file by ValK*/
-/*2019/4/21          version1.0*/
+/*2019/5/7           version1.5*/
 #ifndef __SEQ2SEQ_H__
 #define __SEQ2SEQ_H__
 #include<cstring>
@@ -20,6 +20,7 @@ class Seq2Seq
 		int ONUM;
 		int DEPTH;
 		int MAXTIME;
+		int batch_size;
 		double learningrate;
 		double **input;
 		double **expect;
@@ -29,6 +30,8 @@ class Seq2Seq
 		string func_name;
 		//output function is set as softmax so this doesn't work
 	public:
+		virtual void SetBatchSize(const int __b)=0;
+		//this decides how many batches of data are used in training process
 		virtual void SetLearningRate(const double __lr)=0;
 		//this decides the speed of updating model,but if you set a large rate,network may be corrupted
 		virtual void Calc(const char* __Typename,const int ET,const int DT)=0;
@@ -43,6 +46,7 @@ class Seq2Seq
 		//input data before calculation
 		virtual void Dataout(const char* __Typename,const char* EncoderFile,const char* DecoderFile,const char* OutputFile)=0;
 		//output data to save data.But if network is too large,this may take a lot of time
+		virtual void TotalWork(const char* __Typename,const char* EncoderFile,const char* DecoderFile,const char* OutputFile,const char* QuestiondataName,const char* TrainingdataName)=0;
 };
 /*NormalSeq2Seq with only one hidden layer*/
 class NormalSeq2Seq:public Seq2Seq
@@ -57,6 +61,7 @@ class NormalSeq2Seq:public Seq2Seq
 	public:
 		NormalSeq2Seq(const char*,int,int,int,int);
 		~NormalSeq2Seq();
+		void SetBatchSize(const int);
 		void SetLearningRate(const double);
 		void Calc(const char*,const int,const int);
 		void Training(const char*,const int,const int);
@@ -64,6 +69,7 @@ class NormalSeq2Seq:public Seq2Seq
 		void SetFunction(const char*);
 		void Datain(const char*,const char*,const char*,const char*);
 		void Dataout(const char*,const char*,const char*,const char*);
+		void TotalWork(const char*,const char*,const char*,const char*,const char*,const char*);
 };
 /*DeepSeq2Seq with deep neural networks*/
 class DeepSeq2Seq:public Seq2Seq
@@ -78,6 +84,7 @@ class DeepSeq2Seq:public Seq2Seq
 	public:
 		DeepSeq2Seq(const char*,int,int,int,int,int);
 		~DeepSeq2Seq();
+		void SetBatchSize(const int);
 		void SetLearningRate(const double);
 		void Calc(const char*,const int,const int);
 		void Training(const char*,const int,const int);
@@ -85,7 +92,97 @@ class DeepSeq2Seq:public Seq2Seq
 		void SetFunction(const char*);
 		void Datain(const char*,const char*,const char*,const char*);
 		void Dataout(const char*,const char*,const char*,const char*);
+		void TotalWork(const char*,const char*,const char*,const char*,const char*,const char*);
 };
+
+//All models under normal seq2seq is tested
+void NormalSeq2Seq::TotalWork(const char* __Typename,
+							const char* EncoderFile,
+							const char* DecoderFile,
+							const char* OutputFile,
+							const char* QuestiondataName,
+							const char* TrainingdataName)
+{
+	if(!fopen(EncoderFile,"r")||!fopen(DecoderFile,"r")||!fopen(OutputFile,"r"))
+	{
+		Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
+		cout<<"easyNLP>>[NormalSeq2Seq] Initializing completed.\n";
+	}
+	else
+		Datain(__Typename,EncoderFile,DecoderFile,OutputFile);
+	string ques;
+	string answ;
+	maxerror=1e8;
+	int epoch=0;
+	while(maxerror>0.1)
+	{
+		epoch++;
+		ifstream fin_ques(QuestiondataName);
+		ifstream fin_answ(TrainingdataName);
+		maxerror=0;
+		for(int b=0;b<batch_size;b++)
+		{
+			for(int t=0;t<MAXTIME;t++)
+			{
+				for(int i=0;i<INUM;i++)
+					input[i][t]=0;
+				for(int i=0;i<ONUM;i++)
+					expect[i][t]=0;
+			}
+			getline(fin_ques,ques);
+			getline(fin_answ,answ);
+			for(int i=0;i<ques.length();i++)
+			{
+				if(ques[i]<='Z'&&ques[i]>='A')
+					ques[i]+='a'-'A';
+				if(ques[i]>'z'||ques[i]<'a')
+					ques[i]=' ';
+			}
+			answ=answ+' '+' ';
+			for(int i=0;i<answ.length();i++)
+			{
+				if(answ[i]<='Z'&&answ[i]>='A')
+					answ[i]+='a'-'A';
+				if(answ[i]>'z'||answ[i]<'a')
+					answ[i]=' ';
+			}
+			for(int t=1;t<=ques.length();t++)
+			{
+				if(ques[t-1]<='z'&&ques[t-1]>='a')
+					input[ques[t-1]-'a'+1][t]=1;
+				else
+					input[0][t]=1;
+			}
+			for(int t=0;t<answ.length();t++)
+			{
+				if(answ[t]<='z'&&answ[t]>='a')
+					expect[answ[t]-'a'+1][t]=1;
+				else
+					expect[0][t]=1;
+			}
+			expect[0][answ.length()]=1;
+			for(int t=1;t<=answ.length();t++)
+			{
+				Calc(__Typename,ques.length(),t);
+				ErrorCalc(t);
+				Training(__Typename,ques.length(),t);
+			}
+			maxerror+=error;
+		}
+		if(epoch%5==0)
+		{
+			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			if(epoch%20==0)
+				Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
+		}
+		fin_ques.close();
+		fin_answ.close(); 
+	}
+	cout<<"easyNLP>>Final output in progress..."<<endl;
+	Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
+	cout<<"easyNLP>>Training complete."<<endl;
+	return;
+}
 
 NormalSeq2Seq::NormalSeq2Seq(const char* __Typename,int InputlayerNum,int HiddenlayerNum,int OutputlayerNum,int Maxtime)
 {
@@ -100,21 +197,21 @@ NormalSeq2Seq::NormalSeq2Seq(const char* __Typename,int InputlayerNum,int Hidden
 	lstmdecoder=NULL;
 	gruencoder=NULL;
 	grudecoder=NULL;
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder=new NormalRNN(INUM,HNUM,MAXTIME);
 		rnndecoder=new NormalRNN(ONUM,HNUM,MAXTIME);
 		rnnencoder->INIT();
 		rnndecoder->INIT();
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder=new NormalLSTM(INUM,HNUM,MAXTIME);
 		lstmdecoder=new NormalLSTM(ONUM,HNUM,MAXTIME);
 		lstmencoder->INIT();
 		lstmdecoder->INIT();
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder=new NormalGRU(INUM,HNUM,MAXTIME);
 		grudecoder=new NormalGRU(ONUM,HNUM,MAXTIME);
@@ -152,12 +249,21 @@ NormalSeq2Seq::NormalSeq2Seq(const char* __Typename,int InputlayerNum,int Hidden
 
 NormalSeq2Seq::~NormalSeq2Seq()
 {
-	delete rnnencoder;
-	delete rnndecoder;
-	delete lstmencoder;
-	delete lstmdecoder;
-	delete gruencoder;
-	delete grudecoder;
+	if(rnnencoder!=NULL)
+	{
+		delete rnnencoder;
+		delete rnndecoder;
+	}
+	if(lstmencoder!=NULL)
+	{
+		delete lstmencoder;
+		delete lstmdecoder;
+	}
+	if(gruencoder!=NULL)
+	{
+		delete gruencoder;
+		delete grudecoder;
+	}
 	for(int i=0;i<INUM;i++)
 		delete []input[i];
 	delete []input;
@@ -175,6 +281,11 @@ NormalSeq2Seq::~NormalSeq2Seq()
 	delete []output;
 }
 
+void NormalSeq2Seq::SetBatchSize(const int __b)
+{
+	batch_size=__b;
+}
+
 void NormalSeq2Seq::SetLearningRate(const double __lr)
 {
 	learningrate=__lr;
@@ -182,7 +293,7 @@ void NormalSeq2Seq::SetLearningRate(const double __lr)
 
 void NormalSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		double softmax_max;
 		for(int t=1;t<=ET;t++)
@@ -233,7 +344,7 @@ void NormalSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		double softmax_max;
 		for(int t=1;t<=ET;t++)
@@ -323,7 +434,7 @@ void NormalSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		double softmax_max;
 		for(int t=1;t<=ET;t++)
@@ -418,7 +529,7 @@ void NormalSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 
 void NormalSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		double trans;
 		for(int t=0;t<=DT;t++)
@@ -472,7 +583,7 @@ void NormalSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 				trans=0;
 				for(int j=0;j<HNUM;j++)
 					trans+=rnnencoder->hide[j].diff[t+1]*rnnencoder->hide[j].wh[i];
-				rnnencoder->hide[i].diff[t]=difftanh(trans*rnnencoder->hide[i].in[t]);
+				rnnencoder->hide[i].diff[t]=trans*difftanh(rnnencoder->hide[i].in[t]);//trans in difftanh than program clapsed with NaN
 			}
 		for(int i=0;i<HNUM;i++)
 		{
@@ -545,7 +656,7 @@ void NormalSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		double trans;
 		for(int t=0;t<=DT;t++)
@@ -766,7 +877,7 @@ void NormalSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		double trans;
 		for(int t=0;t<=DT;t++)
@@ -999,17 +1110,17 @@ void NormalSeq2Seq::SetFunction(const char* function_name)
 
 void NormalSeq2Seq::Datain(const char *__Typename,const char *EncoderFile,const char *DecoderFile,const char *OutputFile)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder->Datain(EncoderFile);
 		rnndecoder->Datain(DecoderFile);
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder->Datain(EncoderFile);
 		lstmdecoder->Datain(DecoderFile);
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder->Datain(EncoderFile);
 		grudecoder->Datain(DecoderFile);
@@ -1032,17 +1143,17 @@ void NormalSeq2Seq::Datain(const char *__Typename,const char *EncoderFile,const 
 
 void NormalSeq2Seq::Dataout(const char *__Typename,const char *EncoderFile,const char *DecoderFile,const char *OutputFile)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder->Dataout(EncoderFile);
 		rnndecoder->Dataout(DecoderFile);
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder->Dataout(EncoderFile);
 		lstmdecoder->Dataout(DecoderFile);
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder->Dataout(EncoderFile);
 		grudecoder->Dataout(DecoderFile);
@@ -1063,6 +1174,95 @@ void NormalSeq2Seq::Dataout(const char *__Typename,const char *EncoderFile,const
 	fout.close();
 }
 
+//rnn model is tested
+void DeepSeq2Seq::TotalWork(const char* __Typename,
+							const char* EncoderFile,
+							const char* DecoderFile,
+							const char* OutputFile,
+							const char* QuestiondataName,
+							const char* TrainingdataName)
+{
+	if(!fopen(EncoderFile,"r")||!fopen(DecoderFile,"r")||!fopen(OutputFile,"r"))
+	{
+		Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
+		cout<<"easyNLP>>[DeepSeq2Seq] Initializing completed.\n";
+	}
+	else
+		Datain(__Typename,EncoderFile,DecoderFile,OutputFile);
+	string ques;
+	string answ;
+	maxerror=1e8;
+	int epoch=0;
+	while(maxerror>0.1)
+	{
+		epoch++;
+		ifstream fin_ques(QuestiondataName);
+		ifstream fin_answ(TrainingdataName);
+		maxerror=0;
+		for(int b=0;b<batch_size;b++)
+		{
+			for(int t=0;t<MAXTIME;t++)
+			{
+				for(int i=0;i<INUM;i++)
+					input[i][t]=0;
+				for(int i=0;i<ONUM;i++)
+					expect[i][t]=0;
+			}
+			getline(fin_ques,ques);
+			getline(fin_answ,answ);
+			for(int i=0;i<ques.length();i++)
+			{
+				if(ques[i]<='Z'&&ques[i]>='A')
+					ques[i]+='a'-'A';
+				if(ques[i]>'z'||ques[i]<'a')
+					ques[i]=' ';
+			}
+			answ=answ+' '+' ';
+			for(int i=0;i<answ.length();i++)
+			{
+				if(answ[i]<='Z'&&answ[i]>='A')
+					answ[i]+='a'-'A';
+				if(answ[i]>'z'||answ[i]<'a')
+					answ[i]=' ';
+			}
+			for(int t=1;t<=ques.length();t++)
+			{
+				if(ques[t-1]<='z'&&ques[t-1]>='a')
+					input[ques[t-1]-'a'+1][t]=1;
+				else
+					input[0][t]=1;
+			}
+			for(int t=0;t<answ.length();t++)
+			{
+				if(answ[t]<='z'&&answ[t]>='a')
+					expect[answ[t]-'a'+1][t]=1;
+				else
+					expect[0][t]=1;
+			}
+			expect[0][answ.length()]=1;
+			for(int t=1;t<=answ.length();t++)
+			{
+				Calc(__Typename,ques.length(),t);
+				ErrorCalc(t);
+				Training(__Typename,ques.length(),t);
+			}
+			maxerror+=error;
+		}
+		if(epoch%5==0)
+		{
+			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			if(epoch%20==0)
+				Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
+		}
+		fin_ques.close();
+		fin_answ.close(); 
+	}
+	cout<<"easyNLP>>Final output in progress..."<<endl;
+	Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
+	cout<<"easyNLP>>Training complete."<<endl;
+	return;
+}
+
 DeepSeq2Seq::DeepSeq2Seq(const char* __Typename,int InputlayerNum,int HiddenlayerNum,int OutputlayerNum,int Depth,int Maxtime)
 {
 	srand(unsigned(time(NULL)));
@@ -1077,24 +1277,24 @@ DeepSeq2Seq::DeepSeq2Seq(const char* __Typename,int InputlayerNum,int Hiddenlaye
 	lstmdecoder=NULL;
 	gruencoder=NULL;
 	grudecoder=NULL;
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
-		rnnencoder=new DeepRNN(INUM,HNUM,DEPTH,MAXTIME);
-		rnndecoder=new DeepRNN(ONUM,HNUM,DEPTH,MAXTIME);
+		rnnencoder=new DeepRNN(INUM,HNUM,DEPTH+1,MAXTIME);//deeprnn initializes with Depth-1 (rnnfunction.h)
+		rnndecoder=new DeepRNN(ONUM,HNUM,DEPTH+1,MAXTIME);
 		rnnencoder->INIT();
 		rnndecoder->INIT();
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
-		lstmencoder=new DeepLSTM(INUM,HNUM,DEPTH,MAXTIME);
-		lstmdecoder=new DeepLSTM(ONUM,HNUM,DEPTH,MAXTIME);
+		lstmencoder=new DeepLSTM(INUM,HNUM,DEPTH+1,MAXTIME);//deeplstm initializes with Depth-1 (lstmfunction.h)
+		lstmdecoder=new DeepLSTM(ONUM,HNUM,DEPTH+1,MAXTIME);
 		lstmencoder->INIT();
 		lstmdecoder->INIT();
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
-		gruencoder=new DeepGRU(INUM,HNUM,DEPTH,MAXTIME);
-		grudecoder=new DeepGRU(ONUM,HNUM,DEPTH,MAXTIME);
+		gruencoder=new DeepGRU(INUM,HNUM,DEPTH+1,MAXTIME);//deepgru initializes with Depth-1 (grufunction.h)
+		grudecoder=new DeepGRU(ONUM,HNUM,DEPTH+1,MAXTIME);
 		gruencoder->INIT();
 		grudecoder->INIT();
 	}
@@ -1104,10 +1304,10 @@ DeepSeq2Seq::DeepSeq2Seq(const char* __Typename,int InputlayerNum,int Hiddenlaye
 		system("pause");
 		exit(0);
 	}
-	input=new double*[INUM];
+	input=new double* [INUM];
 	for(int i=0;i<INUM;i++)
 		input[i]=new double[MAXTIME];
-	expect=new double*[ONUM];
+	expect=new double* [ONUM];
 	for(int i=0;i<ONUM;i++)
 		expect[i]=new double[MAXTIME];
 	output=new seq_neuron[ONUM];
@@ -1129,12 +1329,21 @@ DeepSeq2Seq::DeepSeq2Seq(const char* __Typename,int InputlayerNum,int Hiddenlaye
 
 DeepSeq2Seq::~DeepSeq2Seq()
 {
-	delete rnnencoder;
-	delete rnndecoder;
-	delete lstmencoder;
-	delete lstmdecoder;
-	delete gruencoder;
-	delete grudecoder;
+	if(rnnencoder!=NULL)
+	{
+		delete rnnencoder;
+		delete rnndecoder;
+	}
+	if(lstmencoder!=NULL)
+	{
+		delete lstmencoder;
+		delete lstmdecoder;
+	}
+	if(gruencoder!=NULL)
+	{
+		delete gruencoder;
+		delete grudecoder;
+	}
 	for(int i=0;i<INUM;i++)
 		delete []input[i];
 	delete []input;
@@ -1152,6 +1361,11 @@ DeepSeq2Seq::~DeepSeq2Seq()
 	delete []output;
 }
 
+void DeepSeq2Seq::SetBatchSize(const int __b)
+{
+	batch_size=__b;
+}
+
 void DeepSeq2Seq::SetLearningRate(const double __lr)
 {
 	learningrate=__lr;
@@ -1159,7 +1373,7 @@ void DeepSeq2Seq::SetLearningRate(const double __lr)
 
 void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		double softmax_max;
 		for(int t=1;t<=ET;t++)
@@ -1175,6 +1389,7 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 				rnnencoder->hlink[i].out[t]=tanh(rnnencoder->hlink[i].in[t]);
 			}
 			for(int d=0;d<DEPTH;d++)
+			{
 				for(int i=0;i<HNUM;i++)
 				{
 					rnnencoder->hide[i][d].in[t]=rnnencoder->hide[i][d].bia;
@@ -1185,8 +1400,8 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 					}
 					rnnencoder->hide[i][d].out[t]=tanh(rnnencoder->hide[i][d].in[t]);
 				}
+			}
 		}
-		
 		for(int i=0;i<HNUM;i++)
 		{
 			rnndecoder->hlink[i].out[0]=rnnencoder->hlink[i].out[ET];
@@ -1203,7 +1418,6 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 		}
 		for(int i=0;i<ONUM;i++)
 			output[i].out[0]=exp(output[i].in[0])/softmax_max;
-		
 		for(int t=1;t<=DT;t++)
 		{
 			for(int i=0;i<HNUM;i++)
@@ -1239,7 +1453,7 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		double softmax_max;
 		for(int t=1;t<=ET;t++)
@@ -1388,7 +1602,7 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		double softmax_max;
 		for(int t=1;t<=ET;t++)
@@ -1546,7 +1760,7 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 
 void DeepSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		double trans;
 		for(int t=0;t<=DT;t++)
@@ -1821,7 +2035,7 @@ void DeepSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		double trans;
 		for(int t=0;t<=DT;t++)
@@ -2271,7 +2485,7 @@ void DeepSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 		}
 		return;
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		double trans;
 		for(int t=0;t<=DT;t++)
@@ -2672,17 +2886,17 @@ void DeepSeq2Seq::SetFunction(const char* function_name)
 
 void DeepSeq2Seq::Datain(const char *__Typename,const char *EncoderFile,const char *DecoderFile,const char *OutputFile)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder->Datain(EncoderFile);
 		rnndecoder->Datain(DecoderFile);
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder->Datain(EncoderFile);
 		lstmdecoder->Datain(DecoderFile);
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder->Datain(EncoderFile);
 		grudecoder->Datain(DecoderFile);
@@ -2705,17 +2919,17 @@ void DeepSeq2Seq::Datain(const char *__Typename,const char *EncoderFile,const ch
 
 void DeepSeq2Seq::Dataout(const char *__Typename,const char *EncoderFile,const char *DecoderFile,const char *OutputFile)
 {
-	if(__Typename=="rnn")
+	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder->Dataout(EncoderFile);
 		rnndecoder->Dataout(DecoderFile);
 	}
-	else if(__Typename=="lstm")
+	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder->Dataout(EncoderFile);
 		lstmdecoder->Dataout(DecoderFile);
 	}
-	else if(__Typename=="gru")
+	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder->Dataout(EncoderFile);
 		grudecoder->Dataout(DecoderFile);
