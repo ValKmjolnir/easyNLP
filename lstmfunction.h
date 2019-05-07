@@ -1,5 +1,5 @@
 /*lstmfunction.h header file made by ValK*/
-/*2019/3/29                   version 0.2*/
+/*2019/5/7                    version 1.1*/
 #ifndef __LSTMFUNCTION_H__
 #define __LSTMFUNCTION_H__
 
@@ -210,8 +210,18 @@ DeepLSTM::DeepLSTM(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
     INUM=InputlayerNum;
     HNUM=HiddenlayerNum;
     DEPTH=Depth-1;
+	ConstructorAssist();
+}
 
-    hlink=new lstm_neuron[HNUM];
+DeepLSTM::~DeepLSTM()
+{
+    DestructorAssist();
+}
+
+
+void DeepLSTM::ConstructorAssist()
+{
+	hlink=new lstm_neuron[HNUM];
     hide=new lstm_neuron*[HNUM];
     for(int i=0;i<HNUM;i++)
         hide[i]=new lstm_neuron[DEPTH];
@@ -298,9 +308,9 @@ DeepLSTM::DeepLSTM(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
         }
 }
 
-DeepLSTM::~DeepLSTM()
+void DeepLSTM::DestructorAssist()
 {
-    for(int d=0;d<DEPTH;d++)
+	for(int d=0;d<DEPTH;d++)
         for(int i=0;i<HNUM;i++)
         {
             delete []hide[i][d].cell;
