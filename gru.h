@@ -1,7 +1,8 @@
 /*gru.h header file made by ValK*/
-/*2019/3/29          version 0.1*/
+/*2019/5/7           version 1.1*/
 #ifndef __GRU_H__
 #define __GRU_H__
+#include"rnn.h"
 
 struct gru_neuron
 {
@@ -16,32 +17,27 @@ struct gru_neuron
 	double *sig_replace_diff,*sig_replace_transwi,*sig_replace_transwh;
 	double *tan_replace_diff,*tan_replace_transwi,*tan_replace_transwh;
 };
-class NormalGRU
+
+class NormalGRU:public RNN
 {
-	private:
-		int INUM;
-		int HNUM;
-		int MAXTIME;
-		gru_neuron *hide;
 	public:
+		gru_neuron *hide;
 		NormalGRU(int,int,int);
 		~NormalGRU();
 		void INIT();
 		void Datain(const char*);
 		void Dataout(const char*);
 };
-class DeepGRU
+
+class DeepGRU:public RNN
 {
-	private:
-		int INUM;
-		int HNUM;
-		int DEPTH;
-		int MAXTIME;
+	public:
 		gru_neuron *hlink;
 		gru_neuron **hide;
-	public:
 		DeepGRU(int,int,int,int);
 		~DeepGRU();
+		void ConstructorAssist();
+		void DestructorAssist();
 		void INIT();
 		void Datain(const char*);
 		void Dataout(const char*);
