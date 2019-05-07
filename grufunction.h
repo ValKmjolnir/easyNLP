@@ -1,5 +1,5 @@
 /*grufunction.h header file made by ValK*/
-/*2019/3/29                  version 0.1*/
+/*2019/5/7                   version 1.1*/
 #ifndef __GRUFUNCTION_H__
 #define __GRUFUNCTION_H__
 #include "gru.h"
@@ -141,6 +141,17 @@ DeepGRU::DeepGRU(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
 	HNUM=HiddenlayerNum;
 	DEPTH=Depth-1;
 	MAXTIME=Maxtime;
+	ConstructorAssist();
+}
+
+DeepGRU::~DeepGRU()
+{
+	DestructorAssist();
+}
+
+void DeepGRU::ConstructorAssist()
+{
+	int Maxtime=MAXTIME;
 	hlink=new gru_neuron[HNUM];
     hide=new gru_neuron*[HNUM];
     for(int i=0;i<HNUM;i++)
@@ -170,7 +181,7 @@ DeepGRU::DeepGRU(int InputlayerNum,int HiddenlayerNum,int Depth,int Maxtime)
 		}
 }
 
-DeepGRU::~DeepGRU()
+void DeepGRU::DestructorAssist()
 {
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
