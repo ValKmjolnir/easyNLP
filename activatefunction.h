@@ -1,10 +1,9 @@
 /*activatefunction.h header file made by ValK*/
-/*2019/3/15                       version 0.1*/
+/*2019/5/7                        version 1.0*/
 #ifndef __ACTIVATEFUNCTION_H__
 #define __ACTIVATEFUNCTION_H__
 #include<cmath>
 using namespace std;
-
 
 double sigmoid(double x)
 {
@@ -47,6 +46,19 @@ double elu(double x)
 double diffelu(double x)
 {
 	return x>0? 1:exp(x);
+}
+double ClipGradient(double x)
+{
+	double upper_threshold=0.01;
+	double lower_threshold=0.000001;
+	double sign=x>0? 1:-1;
+	x*=sign;
+	if(x>upper_threshold)
+		return sign*upper_threshold;
+	else if(x<lower_threshold)
+		return lower_threshold*sign;
+	else
+		return x*sign;
 }
 
 #endif
