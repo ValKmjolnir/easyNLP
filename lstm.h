@@ -1,7 +1,8 @@
 /*lstm.h header file made by ValK*/
-/*2019/3/24           version 0.1*/
+/*2019/5/7            version 1.1*/
 #ifndef __LSTM_H__
 #define __LSTM_H__
+#include"rnn.h"
 
 struct lstm_neuron
 {
@@ -17,14 +18,10 @@ struct lstm_neuron
 	double out_transbia,*out_transwi,*out_transwh;
 };
 
-class NormalLSTM
+class NormalLSTM:public RNN
 {
-	private:
-		int INUM;
-		int HNUM;
-		int MAXTIME;
-		lstm_neuron *hide;
 	public:
+		lstm_neuron *hide;
 		NormalLSTM(int,int,int);
 		~NormalLSTM();
 		void INIT();
@@ -32,18 +29,15 @@ class NormalLSTM
 		void Dataout(const char*);
 };
 
-class DeepLSTM
+class DeepLSTM:public RNN
 {
-	private:
-		int INUM;
-		int HNUM;
-		int DEPTH;
-		int MAXTIME;
+	public:
 		lstm_neuron *hlink;
 		lstm_neuron **hide;
-	public:
 		DeepLSTM(int,int,int,int);
 		~DeepLSTM();
+		void ConstructorAssist();
+		void DestructorAssist();
 		void INIT();
 		void Datain(const char*);
 		void Dataout(const char*);
