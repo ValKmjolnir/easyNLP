@@ -47,8 +47,8 @@ double NormalBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -63,8 +63,8 @@ double NormalBP::ActivateFunction(double x)
 		return elu(x);
 	else
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 }
@@ -73,8 +73,8 @@ double NormalBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -89,8 +89,8 @@ double NormalBP::DiffFunction(double x)
 		return diffelu(x);
 	else
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 }
@@ -187,8 +187,8 @@ void NormalBP::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -211,8 +211,8 @@ void NormalBP::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -257,6 +257,7 @@ void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,c
 		if(finq.fail()||fint.fail())
 		{
 			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			cout<<"easyNLP>>[Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
 			system("pause");
 			exit(0);
 		}
@@ -334,8 +335,8 @@ double DeepBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -350,8 +351,8 @@ double DeepBP::ActivateFunction(double x)
 		return elu(x);
 	else
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 }
@@ -360,8 +361,8 @@ double DeepBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 	else if(func_name=="sigmoid")
@@ -376,8 +377,8 @@ double DeepBP::DiffFunction(double x)
 		return diffelu(x);
 	else
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]You haven't chose a correct funtion.";
+		cout<<"easyNLP>>[Error]You haven't chose a correct funtion.";
+		system("pause");
 		exit(0);
 	}
 }
@@ -511,8 +512,8 @@ void DeepBP::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -542,8 +543,8 @@ void DeepBP::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"[Error]Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -595,6 +596,7 @@ void DeepBP::TotalWork(const char* dataFilename,const char *QuestiondataName,con
 		if(finq.fail()||fint.fail())
 		{
 			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			cout<<"easyNLP>>[Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
 			system("pause");
 			exit(0);
 		}
