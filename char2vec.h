@@ -256,6 +256,7 @@ void Char2Vec::CountChar(const char *Filename)
 	if(fin.fail())
 	{
 		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+		cout<<"easyNLP>>[Lack] "<<Filename<<endl;
 		system("pause");
 		exit(0);
 	}
