@@ -119,6 +119,13 @@ void NormalSeq2Seq::TotalWork(const char* __Typename,
 		epoch++;
 		ifstream fin_ques(QuestiondataName);
 		ifstream fin_answ(TrainingdataName);
+		if(fin_ques.fail()||fin_answ.fail())
+		{
+			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			cout<<"easyNLP>>[Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			system("pause");
+			exit(0);
+		}
 		maxerror=0;
 		for(int b=0;b<batch_size;b++)
 		{
@@ -1198,6 +1205,13 @@ void DeepSeq2Seq::TotalWork(const char* __Typename,
 		epoch++;
 		ifstream fin_ques(QuestiondataName);
 		ifstream fin_answ(TrainingdataName);
+		if(fin_ques.fail()||fin_answ.fail())
+		{
+			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			cout<<"easyNLP>>[Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			system("pause");
+			exit(0);
+		}
 		maxerror=0;
 		for(int b=0;b<batch_size;b++)
 		{
