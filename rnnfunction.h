@@ -66,8 +66,8 @@ void NormalRNN::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -88,8 +88,8 @@ void NormalRNN::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -199,8 +199,8 @@ void DeepRNN::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -232,8 +232,8 @@ void DeepRNN::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"Unexpected error occured..."<<endl;
-		cout<<"Cannot open file."<<endl;
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
 		exit(0);
 	}
 	for(int i=0;i<HNUM;i++)
