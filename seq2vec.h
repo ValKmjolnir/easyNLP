@@ -100,6 +100,13 @@ void NormalSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,con
 		maxerror=0;
 		ifstream fin_seq(Sequencedata);
 		ifstream fin_t(Trainingdata);
+		if(fin_seq.fail()||fin_t.fail())
+		{
+			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			cout<<"easyNLP>>[Lack] "<<Sequencedata<<" and "<<Trainingdata<<endl;
+			system("pause");
+			exit(0);
+		}
 		for(int b=0;b<batch_size;b++)
 		{
 			getline(fin_seq,ques);
@@ -166,8 +173,7 @@ NormalSeq2Vec::NormalSeq2Vec(const char* __Typename,int InputlayerNum,int Hidden
 	}
 	else
 	{
-		cout<<"Unexpected error occurred..."<<endl;
-		cout<<"[Error]Unknown neural network name."<<endl;
+		cout<<"easyNLP>>[Error]Unknown neural network name."<<endl;
 		exit(0);
 	}
 	expect=new double[ONUM];
@@ -328,8 +334,7 @@ void NormalSeq2Vec::Calc(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<"Unexpected error occurred..."<<endl;
-		cout<<"[Error]Unknown neural network name."<<endl;
+		cout<<"easyNLP>>[Error]Unknown neural network name."<<endl;
 		exit(0);
 	}
 }
@@ -581,8 +586,7 @@ void NormalSeq2Vec::Training(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<"Unexpected error occurred..."<<endl;
-		cout<<"[Error]Unknown neural network name."<<endl;
+		cout<<"easyNLP>>[Error]Unknown neural network name."<<endl;
 		exit(0);
 	}
 }
@@ -668,6 +672,13 @@ void DeepSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,const
 		maxerror=0;
 		ifstream fin_seq(Sequencedata);
 		ifstream fin_t(Trainingdata);
+		if(fin_seq.fail()||fin_t.fail())
+		{
+			cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
+			cout<<"easyNLP>>[Lack] "<<Sequencedata<<" and "<<Trainingdata<<endl;
+			system("pause");
+			exit(0);
+		}
 		for(int b=0;b<batch_size;b++)
 		{
 			getline(fin_seq,ques);
@@ -735,8 +746,7 @@ DeepSeq2Vec::DeepSeq2Vec(const char* __Typename,int InputlayerNum,int Hiddenlaye
 	}
 	else
 	{
-		cout<<"Unexpected error occurred..."<<endl;
-		cout<<"[Error]Unknown neural network name."<<endl;
+		cout<<"easyNLP>>[Error]Unknown neural network name."<<endl;
 		exit(0);
 	}
 	expect=new double[ONUM];
