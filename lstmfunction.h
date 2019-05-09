@@ -1,5 +1,5 @@
 /*lstmfunction.h header file made by ValK*/
-/*2019/5/7                    version 1.1*/
+/*2019/5/9                    version 1.2*/
 #ifndef __LSTMFUNCTION_H__
 #define __LSTMFUNCTION_H__
 
@@ -286,15 +286,15 @@ void DeepLSTM::ConstructorAssist()
             hide[i][d].tan_diff=new double[MAXTIME];
             hide[i][d].out_diff=new double[MAXTIME];
 
-            hide[i][d].fog_wi=new double[INUM];
-            hide[i][d].sig_wi=new double[INUM];
-            hide[i][d].tan_wi=new double[INUM];
-            hide[i][d].out_wi=new double[INUM];
+            hide[i][d].fog_wi=new double[HNUM];//must be HNUM
+            hide[i][d].sig_wi=new double[HNUM];
+            hide[i][d].tan_wi=new double[HNUM];
+            hide[i][d].out_wi=new double[HNUM];
 
-            hide[i][d].fog_transwi=new double[INUM];
-            hide[i][d].sig_transwi=new double[INUM];
-            hide[i][d].tan_transwi=new double[INUM];
-            hide[i][d].out_transwi=new double[INUM];
+            hide[i][d].fog_transwi=new double[HNUM];
+            hide[i][d].sig_transwi=new double[HNUM];
+            hide[i][d].tan_transwi=new double[HNUM];
+            hide[i][d].out_transwi=new double[HNUM];
 
             hide[i][d].fog_wh=new double[HNUM];
             hide[i][d].sig_wh=new double[HNUM];
