@@ -1585,6 +1585,12 @@ void Seq2VecDataMaker(const char *Filename,const char *Sequencedata,const char *
 	ifstream fin(Filename);
 	ofstream fout_seq(Sequencedata);
 	ofstream fout_t(Trainingdata);
+	if(fin.fail()||fout_seq.fail()||fout_t.fail())
+	{
+		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
+		system("pause");
+		exit(0);
+	}
 	getline(fin,txt);
 	int k=0;
 	while(txt[k+MAXTIME]!='\0')
