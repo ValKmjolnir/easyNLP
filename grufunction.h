@@ -1,5 +1,5 @@
 /*grufunction.h header file made by ValK*/
-/*2019/5/7                   version 1.1*/
+/*2019/5/9                   version 1.2*/
 #ifndef __GRUFUNCTION_H__
 #define __GRUFUNCTION_H__
 #include "gru.h"
@@ -174,9 +174,9 @@ void DeepGRU::ConstructorAssist()
 			hide[i][d].sig_update_in=new double[Maxtime];  hide[i][d].sig_replace_in=new double[Maxtime];  hide[i][d].tan_replace_in=new double[Maxtime];
 			hide[i][d].sig_update_out=new double[Maxtime]; hide[i][d].sig_replace_out=new double[Maxtime]; hide[i][d].tan_replace_out=new double[Maxtime];
 			hide[i][d].sig_update_diff=new double[Maxtime];hide[i][d].sig_replace_diff=new double[Maxtime];hide[i][d].tan_replace_diff=new double[Maxtime];
-			hide[i][d].sig_update_wi=new double[INUM];     hide[i][d].sig_replace_wi=new double[INUM];     hide[i][d].tan_replace_wi=new double[INUM];
+			hide[i][d].sig_update_wi=new double[HNUM];     hide[i][d].sig_replace_wi=new double[HNUM];     hide[i][d].tan_replace_wi=new double[HNUM];//must be HNUM
 			hide[i][d].sig_update_wh=new double[HNUM];     hide[i][d].sig_replace_wh=new double[HNUM];     hide[i][d].tan_replace_wh=new double[HNUM];
-			hide[i][d].sig_update_transwi=new double[INUM];hide[i][d].sig_replace_transwi=new double[INUM];hide[i][d].tan_replace_transwi=new double[INUM];
+			hide[i][d].sig_update_transwi=new double[HNUM];hide[i][d].sig_replace_transwi=new double[HNUM];hide[i][d].tan_replace_transwi=new double[HNUM];
 			hide[i][d].sig_update_transwh=new double[HNUM];hide[i][d].sig_replace_transwh=new double[HNUM];hide[i][d].tan_replace_transwh=new double[HNUM];
 		}
 }
