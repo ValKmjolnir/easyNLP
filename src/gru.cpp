@@ -9,8 +9,6 @@
 #include <cstdlib>
 #include <ctime>
 
-using namespace std;
-
 NormalGRU::NormalGRU(int InputlayerNum,int HiddenlayerNum,int Maxtime)
 {
 	INUM=InputlayerNum;
@@ -75,10 +73,10 @@ void NormalGRU::Init()
 
 void NormalGRU::Datain(const std::string& filename)
 {
-	ifstream fin(filename);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -106,29 +104,29 @@ void NormalGRU::Datain(const std::string& filename)
 
 void NormalGRU::Dataout(const std::string& filename)
 {
-	ofstream fout(filename);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hide[i].out[0]<<endl;
-		fout<<hide[i].sig_update_bia<<endl;
-		fout<<hide[i].sig_replace_bia<<endl;
-		fout<<hide[i].tan_replace_bia<<endl;
+		fout<<hide[i].out[0]<<std::endl;
+		fout<<hide[i].sig_update_bia<<std::endl;
+		fout<<hide[i].sig_replace_bia<<std::endl;
+		fout<<hide[i].tan_replace_bia<<std::endl;
 		for(int j=0;j<INUM;j++)
 		{
-			fout<<hide[i].sig_update_wi[j]<<endl;
-			fout<<hide[i].sig_replace_wi[j]<<endl;
-			fout<<hide[i].tan_replace_wi[j]<<endl;
+			fout<<hide[i].sig_update_wi[j]<<std::endl;
+			fout<<hide[i].sig_replace_wi[j]<<std::endl;
+			fout<<hide[i].tan_replace_wi[j]<<std::endl;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fout<<hide[i].sig_update_wh[j]<<endl;
-			fout<<hide[i].sig_replace_wh[j]<<endl;
-			fout<<hide[i].tan_replace_wh[j]<<endl;
+			fout<<hide[i].sig_update_wh[j]<<std::endl;
+			fout<<hide[i].sig_replace_wh[j]<<std::endl;
+			fout<<hide[i].tan_replace_wh[j]<<std::endl;
 		}
 	}
 	fout.close();
@@ -256,10 +254,10 @@ void DeepGRU::Init()
 
 void DeepGRU::Datain(const std::string& filename)
 {
-	ifstream fin(filename);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -304,46 +302,46 @@ void DeepGRU::Datain(const std::string& filename)
 
 void DeepGRU::Dataout(const std::string& filename)
 {
-	ofstream fout(filename);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hlink[i].out[0]<<endl;
-		fout<<hlink[i].sig_update_bia<<endl;
-		fout<<hlink[i].sig_replace_bia<<endl;
-		fout<<hlink[i].tan_replace_bia<<endl;
+		fout<<hlink[i].out[0]<<std::endl;
+		fout<<hlink[i].sig_update_bia<<std::endl;
+		fout<<hlink[i].sig_replace_bia<<std::endl;
+		fout<<hlink[i].tan_replace_bia<<std::endl;
 		for(int j=0;j<INUM;j++)
 		{
-			fout<<hlink[i].sig_update_wi[j]<<endl;
-			fout<<hlink[i].sig_replace_wi[j]<<endl;
-			fout<<hlink[i].tan_replace_wi[j]<<endl;
+			fout<<hlink[i].sig_update_wi[j]<<std::endl;
+			fout<<hlink[i].sig_replace_wi[j]<<std::endl;
+			fout<<hlink[i].tan_replace_wi[j]<<std::endl;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fout<<hlink[i].sig_update_wh[j]<<endl;
-			fout<<hlink[i].sig_replace_wh[j]<<endl;
-			fout<<hlink[i].tan_replace_wh[j]<<endl;
+			fout<<hlink[i].sig_update_wh[j]<<std::endl;
+			fout<<hlink[i].sig_replace_wh[j]<<std::endl;
+			fout<<hlink[i].tan_replace_wh[j]<<std::endl;
 		}
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
 			fout<<hide[i][d].out[0];
-			fout<<hide[i][d].sig_update_bia<<endl;
-			fout<<hide[i][d].sig_replace_bia<<endl;
-			fout<<hide[i][d].tan_replace_bia<<endl;
+			fout<<hide[i][d].sig_update_bia<<std::endl;
+			fout<<hide[i][d].sig_replace_bia<<std::endl;
+			fout<<hide[i][d].tan_replace_bia<<std::endl;
 			for(int j=0;j<HNUM;j++)
 			{
-				fout<<hide[i][d].sig_update_wi[j]<<endl;
-				fout<<hide[i][d].sig_replace_wi[j]<<endl;
-				fout<<hide[i][d].tan_replace_wi[j]<<endl;
-				fout<<hide[i][d].sig_update_wh[j]<<endl;
-				fout<<hide[i][d].sig_replace_wh[j]<<endl;
-				fout<<hide[i][d].tan_replace_wh[j]<<endl;
+				fout<<hide[i][d].sig_update_wi[j]<<std::endl;
+				fout<<hide[i][d].sig_replace_wi[j]<<std::endl;
+				fout<<hide[i][d].tan_replace_wi[j]<<std::endl;
+				fout<<hide[i][d].sig_update_wh[j]<<std::endl;
+				fout<<hide[i][d].sig_replace_wh[j]<<std::endl;
+				fout<<hide[i][d].tan_replace_wh[j]<<std::endl;
 			}
 		}
 	fout.close();

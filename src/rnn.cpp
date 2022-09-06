@@ -6,7 +6,6 @@
 #include<ctime>
 #include<fstream>
 #include<cstdlib>
-using namespace std;
 
 NormalRNN::NormalRNN(int InputlayerNum,int HiddenlayerNum,int Maxtime)
 {
@@ -59,10 +58,10 @@ void NormalRNN::Init()
 
 void NormalRNN::Datain(const char* FILENAME)
 {
-	ifstream fin(FILENAME);
+	std::ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -80,20 +79,20 @@ void NormalRNN::Datain(const char* FILENAME)
 
 void NormalRNN::Dataout(const char* FILENAME)
 {
-	ofstream fout(FILENAME);
+	std::ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hide[i].out[0]<<endl;
-		fout<<hide[i].bia<<endl;
+		fout<<hide[i].out[0]<<std::endl;
+		fout<<hide[i].bia<<std::endl;
 		for(int j=0;j<INUM;j++)
-			fout<<hide[i].wi[j]<<endl;
+			fout<<hide[i].wi[j]<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<hide[i].wh[j]<<endl;
+			fout<<hide[i].wh[j]<<std::endl;
 	}
 	fout.close();
 	return;
@@ -190,10 +189,10 @@ void DeepRNN::Init()
 
 void DeepRNN::Datain(const char* FILENAME)
 {
-	ifstream fin(FILENAME);
+	std::ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -222,30 +221,30 @@ void DeepRNN::Datain(const char* FILENAME)
 
 void DeepRNN::Dataout(const char* FILENAME)
 {
-	ofstream fout(FILENAME);
+	std::ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hlink[i].out[0]<<endl;
-		fout<<hlink[i].bia<<endl;
+		fout<<hlink[i].out[0]<<std::endl;
+		fout<<hlink[i].bia<<std::endl;
 		for(int j=0;j<INUM;j++)
-			fout<<hlink[i].wi[j]<<endl;
+			fout<<hlink[i].wi[j]<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<hlink[i].wh[j]<<endl;
+			fout<<hlink[i].wh[j]<<std::endl;
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
-			fout<<hide[i][d].out[0]<<endl;
-			fout<<hide[i][d].bia<<endl;
+			fout<<hide[i][d].out[0]<<std::endl;
+			fout<<hide[i][d].bia<<std::endl;
 			for(int j=0;j<HNUM;j++)
 			{
-				fout<<hide[i][d].wi[j]<<endl;
-				fout<<hide[i][d].wh[j]<<endl;
+				fout<<hide[i][d].wi[j]<<std::endl;
+				fout<<hide[i][d].wh[j]<<std::endl;
 			}
 		}
 	fout.close();

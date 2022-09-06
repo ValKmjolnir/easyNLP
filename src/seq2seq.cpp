@@ -7,8 +7,6 @@
 #include <ctime>
 #include <cmath>
 
-using namespace std;
-
 //All models under normal seq2seq is tested
 void NormalSeq2Seq::TotalWork(const char* __Typename,
 							const char* EncoderFile,
@@ -20,23 +18,23 @@ void NormalSeq2Seq::TotalWork(const char* __Typename,
 	if(!fopen(EncoderFile,"r")||!fopen(DecoderFile,"r")||!fopen(OutputFile,"r"))
 	{
 		Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
-		cout<<">> [NormalSeq2Seq] Initializing completed.\n";
+		std::cout<<">> [NormalSeq2Seq] Initializing completed.\n";
 	}
 	else
 		Datain(__Typename,EncoderFile,DecoderFile,OutputFile);
-	string ques;
-	string answ;
+	std::string ques;
+	std::string answ;
 	maxerror=1e8;
 	int epoch=0;
 	while(maxerror>0.1)
 	{
 		epoch++;
-		ifstream fin_ques(QuestiondataName);
-		ifstream fin_answ(TrainingdataName);
+		std::ifstream fin_ques(QuestiondataName);
+		std::ifstream fin_answ(TrainingdataName);
 		if(fin_ques.fail()||fin_answ.fail())
 		{
-			cout<<">> [Error] Cannot open data file!"<<endl;
-			cout<<">> [Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			std::cout<<">> [Error] Cannot open data file!"<<std::endl;
+			std::cout<<">> [Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<std::endl;
 			exit(-1);
 		}
 		maxerror=0;
@@ -91,16 +89,16 @@ void NormalSeq2Seq::TotalWork(const char* __Typename,
 		}
 		if(epoch%5==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%20==0)
 				Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
 		}
 		fin_ques.close();
 		fin_answ.close(); 
 	}
-	cout<<">> Final output in progress..."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
-	cout<<">> Training complete."<<endl;
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }
 
@@ -140,7 +138,7 @@ NormalSeq2Seq::NormalSeq2Seq(const char* __Typename,int InputlayerNum,int Hidden
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 	input=new double*[INUM];
@@ -440,7 +438,7 @@ void NormalSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -1001,7 +999,7 @@ void NormalSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -1044,10 +1042,10 @@ void NormalSeq2Seq::Datain(const char *__Typename,const char *EncoderFile,const 
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ifstream fin(OutputFile);
+	std::ifstream fin(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
 		fin>>output[i].bia;
@@ -1076,15 +1074,15 @@ void NormalSeq2Seq::Dataout(const char *__Typename,const char *EncoderFile,const
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ofstream fout(OutputFile);
+	std::ofstream fout(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
 }
@@ -1100,23 +1098,23 @@ void DeepSeq2Seq::TotalWork(const char* __Typename,
 	if(!fopen(EncoderFile,"r")||!fopen(DecoderFile,"r")||!fopen(OutputFile,"r"))
 	{
 		Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
-		cout<<">> [DeepSeq2Seq] Initializing completed.\n";
+		std::cout<<">> [DeepSeq2Seq] Initializing completed.\n";
 	}
 	else
 		Datain(__Typename,EncoderFile,DecoderFile,OutputFile);
-	string ques;
-	string answ;
+	std::string ques;
+	std::string answ;
 	maxerror=1e8;
 	int epoch=0;
 	while(maxerror>0.1)
 	{
 		epoch++;
-		ifstream fin_ques(QuestiondataName);
-		ifstream fin_answ(TrainingdataName);
+		std::ifstream fin_ques(QuestiondataName);
+		std::ifstream fin_answ(TrainingdataName);
 		if(fin_ques.fail()||fin_answ.fail())
 		{
-			cout<<">> [Error] Cannot open data file!"<<endl;
-			cout<<">> [Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			std::cout<<">> [Error] Cannot open data file!"<<std::endl;
+			std::cout<<">> [Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<std::endl;
 			exit(-1);
 		}
 		maxerror=0;
@@ -1171,16 +1169,16 @@ void DeepSeq2Seq::TotalWork(const char* __Typename,
 		}
 		if(epoch%5==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%20==0)
 				Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
 		}
 		fin_ques.close();
 		fin_answ.close(); 
 	}
-	cout<<">> Final output in progress..."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(__Typename,EncoderFile,DecoderFile,OutputFile);
-	cout<<">> Training complete."<<endl;
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }
 
@@ -1221,7 +1219,7 @@ DeepSeq2Seq::DeepSeq2Seq(const char* __Typename,int InputlayerNum,int Hiddenlaye
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 	input=new double* [INUM];
@@ -1672,7 +1670,7 @@ void DeepSeq2Seq::Calc(const char* __Typename,const int ET,const int DT)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -2779,7 +2777,7 @@ void DeepSeq2Seq::Training(const char* __Typename,const int ET,const int DT)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -2822,10 +2820,10 @@ void DeepSeq2Seq::Datain(const char *__Typename,const char *EncoderFile,const ch
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ifstream fin(OutputFile);
+	std::ifstream fin(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
 		fin>>output[i].bia;
@@ -2854,15 +2852,15 @@ void DeepSeq2Seq::Dataout(const char *__Typename,const char *EncoderFile,const c
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ofstream fout(OutputFile);
+	std::ofstream fout(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
 }

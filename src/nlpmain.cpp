@@ -52,13 +52,13 @@ void warn(){
 //main()
 int main(){
 	ObjManager manager;
-	string cmd;
+	std::string cmd;
 	manager.ObjDataIn();
 	warn();
 	help();
 	while(1){
 		std::cout<<">> ";
-		cin>>cmd;
+		std::cin>>cmd;
 		if(cmd=="h"||cmd=="help"){
 			help();
 		}
@@ -88,22 +88,22 @@ int main(){
 			char Sequencedata[100];
 			char Trainingdata[100];
 			std::cout<<">> Please input the name of text data:";
-			cin>>Filename;
+			std::cin>>Filename;
 			std::cout<<">> Please input the name of sequence data(input data):";
-			cin>>Sequencedata;
+			std::cin>>Sequencedata;
 			std::cout<<">> Please input the name of training data:";
-			cin>>Trainingdata;
+			std::cin>>Trainingdata;
 			if(!fopen(Filename,"r")||!fopen(Sequencedata,"w")||!fopen(Trainingdata,"w")){
 				std::cout<<">> [Error] Cannot open file."<<std::endl;
 			}else{
 				std::cout<<">> Please input the length of every input sequence:";
-				cin>>maxtime;
+				std::cin>>maxtime;
 				Seq2VecDataMaker(Filename,Sequencedata,Trainingdata,maxtime);
 			}
 		}else if(cmd=="ft"){
 			char Typename[100];
 			std::cout<<">> Which type of networks would you like to find?\neasyNLP>>";
-			cin>>Typename;
+			std::cin>>Typename;
 			manager.FindSpecialObj(Typename);
 		}else if(cmd=="q"){
 			std::cout<<">> [Quiting] Please wait."<<std::endl;

@@ -16,7 +16,7 @@ private:
 	int INUM;
 	int HNUM;
 	int ONUM;
-	int **cnt;
+	std::vector<std::vector<int>> cnt;
 	std::vector<double> input;
 	std::vector<double> expect;
 	double lr;
@@ -29,9 +29,9 @@ public:
 		INUM=95;
 		ONUM=95;
 		HNUM=hnum;
-		cnt=new int*[95];
+		cnt.resize(95);
 		for(int i=0;i<95;i++)
-			cnt[i]=new int[95];
+			cnt[i].resize(95,0);
 		input.resize(95);
 		expect.resize(95);
 		hide.resize(HNUM);
@@ -58,9 +58,6 @@ public:
 	}
 	~Char2Vec()
 	{
-		for(int i=0;i<95;i++)
-			delete []cnt[i];
-		delete []cnt;
 		for(int i=0;i<HNUM;i++)
 			delete []hide[i].w;
 		for(int i=0;i<ONUM;i++)
@@ -108,9 +105,9 @@ void Char2Vec::Mainwork(const std::string& filename)
 			input[i]=1;
 			softmax=0;
 			for(int j=0;j<95;j++)
-				softmax+=exp(cnt[i][j]);
+				softmax+=std::exp(cnt[i][j]);
 			for(int j=0;j<ONUM;j++)
-				expect[j]=exp(cnt[i][j])/softmax;
+				expect[j]=std::exp(cnt[i][j])/softmax;
 			Calc();
 			error=0;
 			for(int j=0;j<ONUM;j++)
@@ -146,10 +143,10 @@ void Char2Vec::Calc()
 		output[i].in=output[i].bia;
 		for(int j=0;j<HNUM;j++)
 			output[i].in+=output[i].w[j]*hide[j].out;
-		softmax+=exp(output[i].in);
+		softmax+=std::exp(output[i].in);
 	}
 	for(int i=0;i<ONUM;i++)
-		output[i].out=exp(output[i].in)/softmax;
+		output[i].out=std::exp(output[i].in)/softmax;
 	return;
 }
 void Char2Vec::Training()
@@ -243,8 +240,8 @@ void Char2Vec::Print()
 			continue;
 		std::cout<<"   |"<<(char)(i+32)<<":  ";
 		for(int j=0;j<ONUM;j++)
-			if(output[j].out>0.1)
-				std::cout<<"|"<<(char)(j+32)<<':'<<100*output[j].out<<"% ";
+			if(output[j].out>0.05)
+				std::cout<<"|"<<(char)(j+32)<<':'<<int(100*output[j].out)<<"% ";
 		std::cout<<std::endl;
 	}
 	return;
@@ -272,6 +269,7 @@ void Char2Vec::CountChar(const std::string& filename)
 			if(temp[i-1]>=32&&temp[i-1]<=126&&temp[i]>=32&&temp[i]<=126)
 				cnt[temp[i-1]-32][temp[i]-32]++;
 	}
+	std::cout<<">> [Info] character counting complete."<<std::endl;
 	return;
 }
 void Char2Vec::CharDataIllustration(const std::string& filename)

@@ -7,7 +7,6 @@
 #include <ctime>
 #include <fstream>
 #include <cstdlib>
-using namespace std;
 
 NormalBP::NormalBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num)
 {
@@ -44,7 +43,7 @@ double NormalBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -59,7 +58,7 @@ double NormalBP::ActivateFunction(double x)
 		return elu(x);
 	else
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -68,7 +67,7 @@ double NormalBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -83,7 +82,7 @@ double NormalBP::DiffFunction(double x)
 		return diffelu(x);
 	else
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -177,10 +176,10 @@ void NormalBP::Training()
 
 void NormalBP::Datain(const std::string& filename)
 {
-	ifstream fin(filename);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -200,26 +199,26 @@ void NormalBP::Datain(const std::string& filename)
 
 void NormalBP::Dataout(const std::string& filename)
 {
-	ofstream fout(filename);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hide[i].bia<<endl;
+		fout<<hide[i].bia<<std::endl;
 		for(int j=0;j<INUM;j++)
-			fout<<hide[i].w[j]<<endl;
+			fout<<hide[i].w[j]<<std::endl;
 	}
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
-	cout<<">> Output finished"<<endl;
+	std::cout<<">> Output finished"<<std::endl;
 }
 
 void NormalBP::SetFunction(const std::string& func)
@@ -236,7 +235,7 @@ void NormalBP::TotalWork(
 	{
 		Init();
 		Dataout(dataFilename);
-		cout<<">> [NormalBP] Initializing completed.\n";
+		std::cout<<">> [NormalBP] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -246,12 +245,12 @@ void NormalBP::TotalWork(
 	{
 		epoch++;
 		maxerror=0;
-		ifstream finq(QuestiondataName);
-		ifstream fint(TrainingdataName);
+		std::ifstream finq(QuestiondataName);
+		std::ifstream fint(TrainingdataName);
 		if(finq.fail()||fint.fail())
 		{
-			cout<<">> [Error] Cannot open data file!"<<endl;
-			cout<<">> [Error] Lack "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			std::cout<<">> [Error] Cannot open data file!"<<std::endl;
+			std::cout<<">> [Error] Lack "<<QuestiondataName<<" and "<<TrainingdataName<<std::endl;
 			exit(-1);
 		}
 		for(int b=0;b<batch_size;b++)
@@ -269,14 +268,14 @@ void NormalBP::TotalWork(
 		fint.close();
 		if(epoch%10==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%50==0)
 				Dataout(dataFilename);
 		}
 	}
-	cout<<">> Final output in progress..."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(dataFilename);
-	cout<<">> Training complete."<<endl;
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }
 
@@ -328,7 +327,7 @@ double DeepBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -343,7 +342,7 @@ double DeepBP::ActivateFunction(double x)
 		return elu(x);
 	else
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -352,7 +351,7 @@ double DeepBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -367,7 +366,7 @@ double DeepBP::DiffFunction(double x)
 		return diffelu(x);
 	else
 	{
-		cout<<">> [Error] You haven't chose a correct funtion.";
+		std::cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -498,10 +497,10 @@ void DeepBP::Training()
 
 void DeepBP::Datain(const std::string& filename)
 {
-	ifstream fin(filename);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -528,33 +527,33 @@ void DeepBP::Datain(const std::string& filename)
 
 void DeepBP::Dataout(const std::string& filename)
 {
-	ofstream fout(filename);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hlink[i].bia<<endl;
+		fout<<hlink[i].bia<<std::endl;
 		for(int j=0;j<INUM;j++)
-			fout<<hlink[i].w[j]<<endl;
+			fout<<hlink[i].w[j]<<std::endl;
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
-			fout<<hide[i][d].bia<<endl;
+			fout<<hide[i][d].bia<<std::endl;
 			for(int j=0;j<HNUM;j++)
-				fout<<hide[i][d].w[j]<<endl;
+				fout<<hide[i][d].w[j]<<std::endl;
 		}
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
-	cout<<">> Output finished"<<endl;
+	std::cout<<">> Output finished"<<std::endl;
 }
 
 void DeepBP::SetFunction(const std::string& func)
@@ -571,7 +570,7 @@ void DeepBP::TotalWork(
 	{
 		Init();
 		Dataout(dataFilename);
-		cout<<">> [DeepBP] Initializing completed.\n";
+		std::cout<<">> [DeepBP] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -581,12 +580,12 @@ void DeepBP::TotalWork(
 	{
 		epoch++;
 		maxerror=0;
-		ifstream finq(QuestiondataName);
-		ifstream fint(TrainingdataName);
+		std::ifstream finq(QuestiondataName);
+		std::ifstream fint(TrainingdataName);
 		if(finq.fail()||fint.fail())
 		{
-			cout<<">> [Error] Cannot open data file!"<<endl;
-			cout<<">> [Error] Lack "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			std::cout<<">> [Error] Cannot open data file!"<<std::endl;
+			std::cout<<">> [Error] Lack "<<QuestiondataName<<" and "<<TrainingdataName<<std::endl;
 			exit(-1);
 		}
 		for(int b=0;b<batch_size;b++)
@@ -604,13 +603,13 @@ void DeepBP::TotalWork(
 		fint.close();
 		if(epoch%10==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%50==0)
 				Dataout(dataFilename);
 		}
 	}
-	cout<<">> Final output in progress..."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(dataFilename);
-	cout<<">> Training complete."<<endl;
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }

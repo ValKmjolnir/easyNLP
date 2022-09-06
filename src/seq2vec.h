@@ -10,7 +10,6 @@
 #include "lstm.h"
 #include "gru.h"
 #include "actvfunc.h"
-using namespace std;
 
 class Seq2Vec
 {
@@ -27,7 +26,7 @@ protected:
 	double error;
 	double maxerror;
 	neuron *output;
-	string func_name;
+	std::string func_name;
 public:
 	virtual void SetFunction(const char *FunctionName)=0;
 	virtual void SetBatchSize(const int __b)=0;

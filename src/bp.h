@@ -8,8 +8,6 @@
 #include <ctime>
 #include <cstring>
 
-using namespace std;
-
 struct neuron
 {
 	double in,out,bia,diff;
@@ -29,7 +27,7 @@ private:
 	double *expect;
 	double lr;
 	double error;
-	string func_name;
+	std::string func_name;
 	double ActivateFunction(double);
 	double DiffFunction(double);
 public:
@@ -61,7 +59,7 @@ private:
 	double *expect;
 	double lr;
 	double error;
-	string func_name;
+	std::string func_name;
 	double ActivateFunction(double);
 	double DiffFunction(double);
 public:

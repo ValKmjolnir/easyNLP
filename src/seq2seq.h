@@ -13,8 +13,6 @@
 #include "gru.h"
 #include "actvfunc.h"
 
-using namespace std;
-
 /*abstract class Seq2Seq*/
 struct seq_neuron
 {
@@ -37,7 +35,7 @@ class Seq2Seq
 		double error;
 		double maxerror;
 		seq_neuron *output;
-		string func_name;
+		std::string func_name;
 		//output function is set as softmax so this doesn't work
 	public:
 		virtual void SetBatchSize(const int __b)=0;

@@ -6,7 +6,6 @@
 #include <ctime>
 #include <fstream>
 #include <cstdlib>
-using namespace std;
 
 NormalLSTM::NormalLSTM(int InputlayerNum,int HiddenlayerNum,int Maxtime)
 {
@@ -131,10 +130,10 @@ void NormalLSTM::Init()
 
 void NormalLSTM::Datain(const char* FILENAME)
 {
-	ifstream fin(FILENAME);
+	std::ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -166,33 +165,33 @@ void NormalLSTM::Datain(const char* FILENAME)
 
 void NormalLSTM::Dataout(const char* FILENAME)
 {
-	ofstream fout(FILENAME);
+	std::ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hide[i].cell[0]<<endl;
-		fout<<hide[i].out[0]<<endl;
-		fout<<hide[i].fog_bia<<endl;
-		fout<<hide[i].sig_bia<<endl;
-		fout<<hide[i].tan_bia<<endl;
-		fout<<hide[i].out_bia<<endl;
+		fout<<hide[i].cell[0]<<std::endl;
+		fout<<hide[i].out[0]<<std::endl;
+		fout<<hide[i].fog_bia<<std::endl;
+		fout<<hide[i].sig_bia<<std::endl;
+		fout<<hide[i].tan_bia<<std::endl;
+		fout<<hide[i].out_bia<<std::endl;
 		for(int j=0;j<INUM;j++)
 		{
-			fout<<hide[i].fog_wi[j]<<endl;
-			fout<<hide[i].sig_wi[j]<<endl;
-			fout<<hide[i].tan_wi[j]<<endl;
-			fout<<hide[i].out_wi[j]<<endl;
+			fout<<hide[i].fog_wi[j]<<std::endl;
+			fout<<hide[i].sig_wi[j]<<std::endl;
+			fout<<hide[i].tan_wi[j]<<std::endl;
+			fout<<hide[i].out_wi[j]<<std::endl;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fout<<hide[i].fog_wh[j]<<endl;
-			fout<<hide[i].sig_wh[j]<<endl;
-			fout<<hide[i].tan_wh[j]<<endl;
-			fout<<hide[i].out_wh[j]<<endl;
+			fout<<hide[i].fog_wh[j]<<std::endl;
+			fout<<hide[i].sig_wh[j]<<std::endl;
+			fout<<hide[i].tan_wh[j]<<std::endl;
+			fout<<hide[i].out_wh[j]<<std::endl;
 		}
 	}
 	fout.close();
@@ -445,10 +444,10 @@ void DeepLSTM::Init()
 
 void DeepLSTM::Datain(const char* FILENAME)
 {
-	ifstream fin(FILENAME);
+	std::ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -502,55 +501,55 @@ void DeepLSTM::Datain(const char* FILENAME)
 
 void DeepLSTM::Dataout(const char* FILENAME)
 {
-	ofstream fout(FILENAME);
+	std::ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hlink[i].cell[0]<<endl;
-		fout<<hlink[i].out[0]<<endl;
-		fout<<hlink[i].fog_bia<<endl;
-		fout<<hlink[i].sig_bia<<endl;
-		fout<<hlink[i].tan_bia<<endl;
-		fout<<hlink[i].out_bia<<endl;
+		fout<<hlink[i].cell[0]<<std::endl;
+		fout<<hlink[i].out[0]<<std::endl;
+		fout<<hlink[i].fog_bia<<std::endl;
+		fout<<hlink[i].sig_bia<<std::endl;
+		fout<<hlink[i].tan_bia<<std::endl;
+		fout<<hlink[i].out_bia<<std::endl;
 		for(int j=0;j<INUM;j++)
 		{
-			fout<<hlink[i].fog_wi[j]<<endl;
-			fout<<hlink[i].sig_wi[j]<<endl;
-			fout<<hlink[i].tan_wi[j]<<endl;
-			fout<<hlink[i].out_wi[j]<<endl;
+			fout<<hlink[i].fog_wi[j]<<std::endl;
+			fout<<hlink[i].sig_wi[j]<<std::endl;
+			fout<<hlink[i].tan_wi[j]<<std::endl;
+			fout<<hlink[i].out_wi[j]<<std::endl;
 		}
 		for(int j=0;j<HNUM;j++)
 		{
-			fout<<hlink[i].fog_wh[j]<<endl;
-			fout<<hlink[i].sig_wh[j]<<endl;
-			fout<<hlink[i].tan_wh[j]<<endl;
-			fout<<hlink[i].out_wh[j]<<endl;
+			fout<<hlink[i].fog_wh[j]<<std::endl;
+			fout<<hlink[i].sig_wh[j]<<std::endl;
+			fout<<hlink[i].tan_wh[j]<<std::endl;
+			fout<<hlink[i].out_wh[j]<<std::endl;
 		}
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
-			fout<<hide[i][d].cell[0]<<endl;
-			fout<<hide[i][d].out[0]<<endl;
-			fout<<hide[i][d].fog_bia<<endl;
-			fout<<hide[i][d].sig_bia<<endl;
-			fout<<hide[i][d].tan_bia<<endl;
-			fout<<hide[i][d].out_bia<<endl;
+			fout<<hide[i][d].cell[0]<<std::endl;
+			fout<<hide[i][d].out[0]<<std::endl;
+			fout<<hide[i][d].fog_bia<<std::endl;
+			fout<<hide[i][d].sig_bia<<std::endl;
+			fout<<hide[i][d].tan_bia<<std::endl;
+			fout<<hide[i][d].out_bia<<std::endl;
 			for(int j=0;j<HNUM;j++)
 			{
-				fout<<hide[i][d].fog_wi[j]<<endl;
-				fout<<hide[i][d].sig_wi[j]<<endl;
-				fout<<hide[i][d].tan_wi[j]<<endl;
-				fout<<hide[i][d].out_wi[j]<<endl;
+				fout<<hide[i][d].fog_wi[j]<<std::endl;
+				fout<<hide[i][d].sig_wi[j]<<std::endl;
+				fout<<hide[i][d].tan_wi[j]<<std::endl;
+				fout<<hide[i][d].out_wi[j]<<std::endl;
 
-				fout<<hide[i][d].fog_wh[j]<<endl;
-				fout<<hide[i][d].sig_wh[j]<<endl;
-				fout<<hide[i][d].tan_wh[j]<<endl;
-				fout<<hide[i][d].out_wh[j]<<endl;
+				fout<<hide[i][d].fog_wh[j]<<std::endl;
+				fout<<hide[i][d].sig_wh[j]<<std::endl;
+				fout<<hide[i][d].tan_wh[j]<<std::endl;
+				fout<<hide[i][d].out_wh[j]<<std::endl;
 			}
 		}
 	fout.close();

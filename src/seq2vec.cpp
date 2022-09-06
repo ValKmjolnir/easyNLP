@@ -5,7 +5,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
-using namespace std;
 
 //All models of NormalSeq2Vec is available
 void NormalSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,const char *OutputFile,const char *Sequencedata,const char *Trainingdata)
@@ -13,24 +12,24 @@ void NormalSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,con
 	if(!fopen(EncoderFile,"r")||!fopen(OutputFile,"r"))
 	{
 		Dataout(__Typename,EncoderFile,OutputFile);
-		cout<<">> [NormalSeq2Vec] Initializing completed.\n";
+		std::cout<<">> [NormalSeq2Vec] Initializing completed.\n";
 	}
 	else
 		Datain(__Typename,EncoderFile,OutputFile);
 	maxerror=1e8;
-	string ques;
+	std::string ques;
 	char answ;
 	int epoch=0;
 	while(maxerror>0.1)
 	{
 		epoch++;
 		maxerror=0;
-		ifstream fin_seq(Sequencedata);
-		ifstream fin_t(Trainingdata);
+		std::ifstream fin_seq(Sequencedata);
+		std::ifstream fin_t(Trainingdata);
 		if(fin_seq.fail()||fin_t.fail())
 		{
-			cout<<">> [Error] Cannot open data file!"<<endl;
-			cout<<">> [Lack] "<<Sequencedata<<" and "<<Trainingdata<<endl;
+			std::cout<<">> [Error] Cannot open data file!"<<std::endl;
+			std::cout<<">> [Lack] "<<Sequencedata<<" and "<<Trainingdata<<std::endl;
 			exit(-1);
 		}
 		for(int b=0;b<batch_size;b++)
@@ -60,16 +59,16 @@ void NormalSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,con
 		}
 		if(epoch%5==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%20==0)
 				Dataout(__Typename,EncoderFile,OutputFile);
 		}
 		fin_seq.close();
 		fin_t.close();
 	}
-	cout<<">> Final output in progress..."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(__Typename,EncoderFile,OutputFile);
-	cout<<">> Training complete."<<endl;
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }
 
@@ -99,7 +98,7 @@ NormalSeq2Vec::NormalSeq2Vec(const char* __Typename,int InputlayerNum,int Hidden
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 	expect=new double[ONUM];
@@ -260,7 +259,7 @@ void NormalSeq2Vec::Calc(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -512,7 +511,7 @@ void NormalSeq2Vec::Training(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -540,10 +539,10 @@ void NormalSeq2Vec::Datain(const char *__Typename,const char *EncoderFile,const 
 		gruencoder->Datain(EncoderFile);
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ifstream fin(OutputFile);
+	std::ifstream fin(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
 		fin>>output[i].bia;
@@ -563,15 +562,15 @@ void NormalSeq2Vec::Dataout(const char *__Typename,const char *EncoderFile,const
 		gruencoder->Dataout(EncoderFile);
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ofstream fout(OutputFile);
+	std::ofstream fout(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
 }
@@ -582,29 +581,29 @@ void DeepSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,const
 	if(!fopen(EncoderFile,"r")||!fopen(OutputFile,"r"))
 	{
 		Dataout(__Typename,EncoderFile,OutputFile);
-		cout<<">> [DeepSeq2Vec] Initializing completed.\n";
+		std::cout<<">> [DeepSeq2Vec] Initializing completed.\n";
 	}
 	else
 		Datain(__Typename,EncoderFile,OutputFile);
 	maxerror=1e8;
-	string ques;
+	std::string ques;
 	char answ;
 	int epoch=0;
 	while(maxerror>0.1)
 	{
 		epoch++;
 		maxerror=0;
-		ifstream fin_seq(Sequencedata);
-		ifstream fin_t(Trainingdata);
+		std::ifstream fin_seq(Sequencedata);
+		std::ifstream fin_t(Trainingdata);
 		if(fin_seq.fail()||fin_t.fail())
 		{
-			cout<<">> [Error] Cannot open data file!"<<endl;
-			cout<<">> [Lack] "<<Sequencedata<<" and "<<Trainingdata<<endl;
+			std::cout<<">> [Error] Cannot open data file!"<<std::endl;
+			std::cout<<">> [Lack] "<<Sequencedata<<" and "<<Trainingdata<<std::endl;
 			exit(-1);
 		}
 		for(int b=0;b<batch_size;b++)
 		{
-			getline(fin_seq,ques);
+			std::getline(fin_seq,ques);
 			fin_t>>answ;
 			for(int t=0;t<MAXTIME;t++)
 				for(int i=0;i<INUM;i++)
@@ -629,16 +628,16 @@ void DeepSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,const
 		}
 		if(epoch%5==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%20==0)
 				Dataout(__Typename,EncoderFile,OutputFile);
 		}
 		fin_seq.close();
 		fin_t.close();
 	}
-	cout<<">> Final output in progress..."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(__Typename,EncoderFile,OutputFile);
-	cout<<">> Training complete."<<endl;
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }
 
@@ -669,7 +668,7 @@ DeepSeq2Vec::DeepSeq2Vec(const char* __Typename,int InputlayerNum,int Hiddenlaye
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 	expect=new double[ONUM];
@@ -901,7 +900,7 @@ void DeepSeq2Vec::Calc(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -1435,7 +1434,7 @@ void DeepSeq2Vec::Training(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
 }
@@ -1463,10 +1462,10 @@ void DeepSeq2Vec::Datain(const char *__Typename,const char *EncoderFile,const ch
 		gruencoder->Datain(EncoderFile);
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ifstream fin(OutputFile);
+	std::ifstream fin(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
 		fin>>output[i].bia;
@@ -1486,15 +1485,15 @@ void DeepSeq2Vec::Dataout(const char *__Typename,const char *EncoderFile,const c
 		gruencoder->Dataout(EncoderFile);
 	else
 	{
-		cout<<">> [Error] Unknown neural network name."<<endl;
+		std::cout<<">> [Error] Unknown neural network name."<<std::endl;
 		exit(-1);
 	}
-	ofstream fout(OutputFile);
+	std::ofstream fout(OutputFile);
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
 }
@@ -1502,16 +1501,16 @@ void DeepSeq2Vec::Dataout(const char *__Typename,const char *EncoderFile,const c
 
 void Seq2VecDataMaker(const char *Filename,const char *Sequencedata,const char *Trainingdata,const int MAXTIME)
 {
-	string txt;
-	ifstream fin(Filename);
-	ofstream fout_seq(Sequencedata);
-	ofstream fout_t(Trainingdata);
+	std::string txt;
+	std::ifstream fin(Filename);
+	std::ofstream fout_seq(Sequencedata);
+	std::ofstream fout_t(Trainingdata);
 	if(fin.fail()||fout_seq.fail()||fout_t.fail())
 	{
-		cout<<">> [Error] Cannot open file."<<endl;
+		std::cout<<">> [Error] Cannot open file."<<std::endl;
 		exit(-1);
 	}
-	getline(fin,txt);
+	std::getline(fin,txt);
 	int k=0;
 	while(txt[k+MAXTIME]!='\0')
 	{
@@ -1526,14 +1525,14 @@ void Seq2VecDataMaker(const char *Filename,const char *Sequencedata,const char *
 					txt[i+k+1]+='a'-'A';
 				if(txt[i+k+1]==' ')
 					txt[i+k+1]='#';
-				fout_t<<txt[i+k+1]<<endl;
+				fout_t<<txt[i+k+1]<<std::endl;
 			}
 		}
-		fout_seq<<endl;
+		fout_seq<<std::endl;
 		k++;
 	}
 	fin.close();
 	fout_seq.close();
 	fout_t.close();
-	cout<<">> Data making complete."<<endl;
+	std::cout<<">> Data making complete."<<std::endl;
 }
