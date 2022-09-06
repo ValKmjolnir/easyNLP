@@ -12,7 +12,7 @@ using namespace std;
 NormalBP::NormalBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num)
 {
 	error=1e8;
-	learningrate=0;
+	lr=0;
 	func_name="Unknown";
 	INUM=inputlayer_num;
 	HNUM=hiddenlayer_num;
@@ -88,7 +88,7 @@ double NormalBP::DiffFunction(double x)
 	}
 }
 
-void NormalBP::INIT()
+void NormalBP::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -145,7 +145,7 @@ double NormalBP::GetError()
 
 void NormalBP::SetLearningrate(double __lr)
 {
-	learningrate=__lr;
+	lr=__lr;
 }
 
 void NormalBP::Training()
@@ -162,22 +162,22 @@ void NormalBP::Training()
 	
 	for(int i=0;i<ONUM;i++)
 	{
-		output[i].bia+=2*learningrate*output[i].diff;
+		output[i].bia+=2*lr*output[i].diff;
 		for(int j=0;j<HNUM;j++)
-			output[i].w[j]+=learningrate*output[i].diff*hide[j].out;
+			output[i].w[j]+=lr*output[i].diff*hide[j].out;
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		hide[i].bia+=2*learningrate*hide[i].diff;
+		hide[i].bia+=2*lr*hide[i].diff;
 		for(int j=0;j<INUM;j++)
-			hide[i].w[j]+=learningrate*hide[i].diff*input[j];
+			hide[i].w[j]+=lr*hide[i].diff*input[j];
 	}
 	return;
 }
 
-void NormalBP::Datain(const char* FILENAME)
+void NormalBP::Datain(const std::string& filename)
 {
-	ifstream fin(FILENAME);
+	ifstream fin(filename);
 	if(fin.fail())
 	{
 		cout<<">> [Error] Cannot open file."<<endl;
@@ -198,9 +198,9 @@ void NormalBP::Datain(const char* FILENAME)
 	fin.close();
 }
 
-void NormalBP::Dataout(const char* FILENAME)
+void NormalBP::Dataout(const std::string& filename)
 {
-	ofstream fout(FILENAME);
+	ofstream fout(filename);
 	if(fout.fail())
 	{
 		cout<<">> [Error] Cannot open file."<<endl;
@@ -222,16 +222,19 @@ void NormalBP::Dataout(const char* FILENAME)
 	cout<<">> Output finished"<<endl;
 }
 
-void NormalBP::SetFunction(const char* function_name)
+void NormalBP::SetFunction(const std::string& func)
 {
-	func_name=function_name;
+	func_name=func;
 }
 
-void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,const char *TrainingdataName)
+void NormalBP::TotalWork(
+	const std::string& dataFilename,
+	const std::string& QuestiondataName,
+	const std::string& TrainingdataName)
 {
-	if(!fopen(dataFilename,"r"))
+	if(!fopen(dataFilename.c_str(),"r"))
 	{
-		INIT();
+		Init();
 		Dataout(dataFilename);
 		cout<<">> [NormalBP] Initializing completed.\n";
 	}
@@ -280,7 +283,7 @@ void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,c
 DeepBP::DeepBP(int inputlayer_num,int hiddenlayer_num,int outputlayer_num,int depth)
 {
 	error=1e8;
-	learningrate=0;
+	lr=0;
 	func_name="Unknown";
 	INUM=inputlayer_num;
 	HNUM=hiddenlayer_num;
@@ -369,7 +372,7 @@ double DeepBP::DiffFunction(double x)
 	}
 }
 
-void DeepBP::INIT()
+void DeepBP::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -441,7 +444,7 @@ double DeepBP::GetError()
 
 void DeepBP::SetLearningrate(double __lr)
 {
-	learningrate=__lr;
+	lr=__lr;
 }
 
 void DeepBP::Training()
@@ -473,29 +476,29 @@ void DeepBP::Training()
 	
 	for(int i=0;i<HNUM;i++)
 	{
-		hlink[i].bia+=2*learningrate*hlink[i].diff;
+		hlink[i].bia+=2*lr*hlink[i].diff;
 		for(int j=0;j<INUM;j++)
-			hlink[i].w[j]+=learningrate*hlink[i].diff*input[j];
+			hlink[i].w[j]+=lr*hlink[i].diff*input[j];
 	}
 	for(int d=0;d<DEPTH;d++)
 		for(int i=0;i<HNUM;i++)
 		{
-			hide[i][d].bia+=2*learningrate*hide[i][d].diff;
+			hide[i][d].bia+=2*lr*hide[i][d].diff;
 			for(int j=0;j<HNUM;j++)
-				hide[i][d].w[j]+=learningrate*hide[i][d].diff*(d==0? hlink[j].out:hide[j][d-1].out);
+				hide[i][d].w[j]+=lr*hide[i][d].diff*(d==0? hlink[j].out:hide[j][d-1].out);
 		}
 	for(int i=0;i<ONUM;i++)
 	{
-		output[i].bia+=2*learningrate*output[i].diff;
+		output[i].bia+=2*lr*output[i].diff;
 		for(int j=0;j<HNUM;j++)
-			output[i].w[j]+=learningrate*output[i].diff*hide[j][DEPTH-1].out;
+			output[i].w[j]+=lr*output[i].diff*hide[j][DEPTH-1].out;
 	}
 	return;
 }
 
-void DeepBP::Datain(const char* FILENAME)
+void DeepBP::Datain(const std::string& filename)
 {
-	ifstream fin(FILENAME);
+	ifstream fin(filename);
 	if(fin.fail())
 	{
 		cout<<">> [Error] Cannot open file."<<endl;
@@ -523,9 +526,9 @@ void DeepBP::Datain(const char* FILENAME)
 	fin.close();
 }
 
-void DeepBP::Dataout(const char* FILENAME)
+void DeepBP::Dataout(const std::string& filename)
 {
-	ofstream fout(FILENAME);
+	ofstream fout(filename);
 	if(fout.fail())
 	{
 		cout<<">> [Error] Cannot open file."<<endl;
@@ -554,16 +557,19 @@ void DeepBP::Dataout(const char* FILENAME)
 	cout<<">> Output finished"<<endl;
 }
 
-void DeepBP::SetFunction(const char* function_name)
+void DeepBP::SetFunction(const std::string& func)
 {
-	func_name=function_name;
+	func_name=func;
 }
 
-void DeepBP::TotalWork(const char* dataFilename,const char *QuestiondataName,const char *TrainingdataName)
+void DeepBP::TotalWork(
+	const std::string& dataFilename,
+	const std::string& QuestiondataName,
+	const std::string& TrainingdataName)
 {
-	if(!fopen(dataFilename,"r"))
+	if(!fopen(dataFilename.c_str(),"r"))
 	{
-		INIT();
+		Init();
 		Dataout(dataFilename);
 		cout<<">> [DeepBP] Initializing completed.\n";
 	}

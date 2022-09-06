@@ -101,7 +101,7 @@ NormalLSTM::~NormalLSTM()
     delete []hide;
 }
 
-void NormalLSTM::INIT()
+void NormalLSTM::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -134,7 +134,7 @@ void NormalLSTM::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -169,7 +169,7 @@ void NormalLSTM::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -392,7 +392,7 @@ void DeepLSTM::DestructorAssist()
     delete []hide;
 }
 
-void DeepLSTM::INIT()
+void DeepLSTM::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -448,7 +448,7 @@ void DeepLSTM::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -505,7 +505,7 @@ void DeepLSTM::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)

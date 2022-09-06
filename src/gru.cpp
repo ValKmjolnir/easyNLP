@@ -4,8 +4,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include <cmath>
 #include <cstdlib>
+#include <ctime>
+
 using namespace std;
 
 NormalGRU::NormalGRU(int InputlayerNum,int HiddenlayerNum,int Maxtime)
@@ -45,7 +48,7 @@ NormalGRU::~NormalGRU()
 	return;
 }
 
-void NormalGRU::INIT()
+void NormalGRU::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -70,12 +73,12 @@ void NormalGRU::INIT()
 	return;
 }
 
-void NormalGRU::Datain(const char* FILENAME)
+void NormalGRU::Datain(const std::string& filename)
 {
-	ifstream fin(FILENAME);
+	ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -101,12 +104,12 @@ void NormalGRU::Datain(const char* FILENAME)
 	return;
 }
 
-void NormalGRU::Dataout(const char* FILENAME)
+void NormalGRU::Dataout(const std::string& filename)
 {
-	ofstream fout(FILENAME);
+	ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -209,7 +212,7 @@ void DeepGRU::DestructorAssist()
     delete []hide;
 }
 
-void DeepGRU::INIT()
+void DeepGRU::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -251,12 +254,12 @@ void DeepGRU::INIT()
 	return;
 }
 
-void DeepGRU::Datain(const char* FILENAME)
+void DeepGRU::Datain(const std::string& filename)
 {
-	ifstream fin(FILENAME);
+	ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -299,12 +302,12 @@ void DeepGRU::Datain(const char* FILENAME)
 	return;
 }
 
-void DeepGRU::Dataout(const char* FILENAME)
+void DeepGRU::Dataout(const std::string& filename)
 {
-	ofstream fout(FILENAME);
+	ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)

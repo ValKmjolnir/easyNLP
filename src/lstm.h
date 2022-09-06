@@ -28,7 +28,7 @@ public:
 	lstm_neuron *hide;
 	NormalLSTM(int,int,int);
 	~NormalLSTM();
-	void INIT();
+	void Init();
 	void Datain(const char*);
 	void Dataout(const char*);
 };
@@ -47,7 +47,7 @@ public:
 	~DeepLSTM();
 	void ConstructorAssist();
 	void DestructorAssist();
-	void INIT();
+	void Init();
 	void Datain(const char*);
 	void Dataout(const char*);
 };

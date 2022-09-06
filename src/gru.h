@@ -2,7 +2,10 @@
 /*2019/5/7           version 1.1*/
 #ifndef __GRU_H__
 #define __GRU_H__
+
 #include "rnn.h"
+#include <iostream>
+#include <cstring>
 
 struct gru_neuron
 {
@@ -28,9 +31,9 @@ public:
 	gru_neuron *hide;
 	NormalGRU(int,int,int);
 	~NormalGRU();
-	void INIT();
-	void Datain(const char*);
-	void Dataout(const char*);
+	void Init();
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
 };
 
 class DeepGRU
@@ -47,9 +50,9 @@ public:
 	~DeepGRU();
 	void ConstructorAssist();
 	void DestructorAssist();
-	void INIT();
-	void Datain(const char*);
-	void Dataout(const char*);
+	void Init();
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
 };
 
 #endif

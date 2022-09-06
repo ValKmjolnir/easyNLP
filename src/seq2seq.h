@@ -31,7 +31,7 @@ class Seq2Seq
 		int DEPTH;
 		int MAXTIME;
 		int batch_size;
-		double learningrate;
+		double lr;
 		double **input;
 		double **expect;
 		double error;

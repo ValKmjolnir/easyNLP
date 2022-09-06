@@ -29,7 +29,7 @@ void NormalSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,con
 		ifstream fin_t(Trainingdata);
 		if(fin_seq.fail()||fin_t.fail())
 		{
-			cout<<">> [Error]Cannot open data file!"<<endl;
+			cout<<">> [Error] Cannot open data file!"<<endl;
 			cout<<">> [Lack] "<<Sequencedata<<" and "<<Trainingdata<<endl;
 			exit(-1);
 		}
@@ -67,9 +67,9 @@ void NormalSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,con
 		fin_seq.close();
 		fin_t.close();
 	}
-	cout<<">>Final output in progress..."<<endl;
+	cout<<">> Final output in progress..."<<endl;
 	Dataout(__Typename,EncoderFile,OutputFile);
-	cout<<">>Training complete."<<endl;
+	cout<<">> Training complete."<<endl;
 	return;
 }
 
@@ -85,21 +85,21 @@ NormalSeq2Vec::NormalSeq2Vec(const char* __Typename,int InputlayerNum,int Hidden
 	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder=new NormalRNN(INUM,HNUM,MAXTIME);
-		rnnencoder->INIT();
+		rnnencoder->Init();
 	}
 	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder=new NormalLSTM(INUM,HNUM,MAXTIME);
-		lstmencoder->INIT();
+		lstmencoder->Init();
 	}
 	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder=new NormalGRU(INUM,HNUM,MAXTIME);
-		gruencoder->INIT();
+		gruencoder->Init();
 	}
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 	expect=new double[ONUM];
@@ -143,7 +143,7 @@ void NormalSeq2Vec::SetFunction(const char *FunctionName)
 
 void NormalSeq2Vec::SetLearningRate(const double __lr)
 {
-	learningrate=__lr;
+	lr=__lr;
 }
 
 void NormalSeq2Vec::Calc(const char* __Typename,const int T)
@@ -260,7 +260,7 @@ void NormalSeq2Vec::Calc(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 }
@@ -306,17 +306,17 @@ void NormalSeq2Vec::Training(const char* __Typename,const int T)
 			}
 		for(int i=0;i<HNUM;i++)
 		{
-			rnnencoder->hide[i].bia+=clipgrad(learningrate*rnnencoder->hide[i].transbia);
+			rnnencoder->hide[i].bia+=clipgrad(lr*rnnencoder->hide[i].transbia);
 			for(int j=0;j<INUM;j++)
-				rnnencoder->hide[i].wi[j]+=clipgrad(learningrate*rnnencoder->hide[i].transwi[j]);
+				rnnencoder->hide[i].wi[j]+=clipgrad(lr*rnnencoder->hide[i].transwi[j]);
 			for(int j=0;j<HNUM;j++)
-				rnnencoder->hide[i].wh[j]+=clipgrad(learningrate*rnnencoder->hide[i].transwh[j]);
+				rnnencoder->hide[i].wh[j]+=clipgrad(lr*rnnencoder->hide[i].transwh[j]);
 		}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia+=clipgrad(learningrate*output[i].diff);
+			output[i].bia+=clipgrad(lr*output[i].diff);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]+=clipgrad(learningrate*output[i].diff*rnnencoder->hide[j].out[T]);
+				output[i].w[j]+=clipgrad(lr*output[i].diff*rnnencoder->hide[j].out[T]);
 		}
 		return;
 	}
@@ -393,30 +393,30 @@ void NormalSeq2Vec::Training(const char* __Typename,const int T)
 		}
 		for(int i=0;i<HNUM;i++)
 		{
-			lstmencoder->hide[i].fog_bia+=clipgrad(learningrate*lstmencoder->hide[i].fog_transbia);
-			lstmencoder->hide[i].sig_bia+=clipgrad(learningrate*lstmencoder->hide[i].sig_transbia);
-			lstmencoder->hide[i].tan_bia+=clipgrad(learningrate*lstmencoder->hide[i].tan_transbia);
-			lstmencoder->hide[i].out_bia+=clipgrad(learningrate*lstmencoder->hide[i].out_transbia);
+			lstmencoder->hide[i].fog_bia+=clipgrad(lr*lstmencoder->hide[i].fog_transbia);
+			lstmencoder->hide[i].sig_bia+=clipgrad(lr*lstmencoder->hide[i].sig_transbia);
+			lstmencoder->hide[i].tan_bia+=clipgrad(lr*lstmencoder->hide[i].tan_transbia);
+			lstmencoder->hide[i].out_bia+=clipgrad(lr*lstmencoder->hide[i].out_transbia);
 			for(int j=0;j<INUM;j++)
 			{
-				lstmencoder->hide[i].fog_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i].fog_transwi[j]);
-				lstmencoder->hide[i].sig_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i].sig_transwi[j]);
-				lstmencoder->hide[i].tan_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i].tan_transwi[j]);
-				lstmencoder->hide[i].out_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i].out_transwi[j]);
+				lstmencoder->hide[i].fog_wi[j]+=clipgrad(lr*lstmencoder->hide[i].fog_transwi[j]);
+				lstmencoder->hide[i].sig_wi[j]+=clipgrad(lr*lstmencoder->hide[i].sig_transwi[j]);
+				lstmencoder->hide[i].tan_wi[j]+=clipgrad(lr*lstmencoder->hide[i].tan_transwi[j]);
+				lstmencoder->hide[i].out_wi[j]+=clipgrad(lr*lstmencoder->hide[i].out_transwi[j]);
 			}
 			for(int j=0;j<HNUM;j++)
 			{
-				lstmencoder->hide[i].fog_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i].fog_transwh[j]);
-				lstmencoder->hide[i].sig_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i].sig_transwh[j]);
-				lstmencoder->hide[i].tan_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i].tan_transwh[j]);
-				lstmencoder->hide[i].out_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i].out_transwh[j]);
+				lstmencoder->hide[i].fog_wh[j]+=clipgrad(lr*lstmencoder->hide[i].fog_transwh[j]);
+				lstmencoder->hide[i].sig_wh[j]+=clipgrad(lr*lstmencoder->hide[i].sig_transwh[j]);
+				lstmencoder->hide[i].tan_wh[j]+=clipgrad(lr*lstmencoder->hide[i].tan_transwh[j]);
+				lstmencoder->hide[i].out_wh[j]+=clipgrad(lr*lstmencoder->hide[i].out_transwh[j]);
 			}
 		}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia+=clipgrad(learningrate*output[i].diff);
+			output[i].bia+=clipgrad(lr*output[i].diff);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]+=clipgrad(learningrate*output[i].diff*lstmencoder->hide[j].out[T]);
+				output[i].w[j]+=clipgrad(lr*output[i].diff*lstmencoder->hide[j].out[T]);
 		}
 		return;
 	}
@@ -486,33 +486,33 @@ void NormalSeq2Vec::Training(const char* __Typename,const int T)
 			}
 		for(int i=0;i<HNUM;i++)
 		{
-			gruencoder->hide[i].sig_update_bia+=clipgrad(learningrate*gruencoder->hide[i].sig_update_transbia);
-			gruencoder->hide[i].sig_replace_bia+=clipgrad(learningrate*gruencoder->hide[i].sig_replace_transbia);
-			gruencoder->hide[i].tan_replace_bia+=clipgrad(learningrate*gruencoder->hide[i].tan_replace_transbia);
+			gruencoder->hide[i].sig_update_bia+=clipgrad(lr*gruencoder->hide[i].sig_update_transbia);
+			gruencoder->hide[i].sig_replace_bia+=clipgrad(lr*gruencoder->hide[i].sig_replace_transbia);
+			gruencoder->hide[i].tan_replace_bia+=clipgrad(lr*gruencoder->hide[i].tan_replace_transbia);
 			for(int j=0;j<INUM;j++)
 			{
-				gruencoder->hide[i].sig_update_wi[j]+=clipgrad(learningrate*gruencoder->hide[i].sig_update_transwi[j]);
-				gruencoder->hide[i].sig_replace_wi[j]+=clipgrad(learningrate*gruencoder->hide[i].sig_replace_transwi[j]);
-				gruencoder->hide[i].tan_replace_wi[j]+=clipgrad(learningrate*gruencoder->hide[i].tan_replace_transwi[j]);
+				gruencoder->hide[i].sig_update_wi[j]+=clipgrad(lr*gruencoder->hide[i].sig_update_transwi[j]);
+				gruencoder->hide[i].sig_replace_wi[j]+=clipgrad(lr*gruencoder->hide[i].sig_replace_transwi[j]);
+				gruencoder->hide[i].tan_replace_wi[j]+=clipgrad(lr*gruencoder->hide[i].tan_replace_transwi[j]);
 			}
 			for(int j=0;j<HNUM;j++)
 			{
-				gruencoder->hide[i].sig_update_wh[j]+=clipgrad(learningrate*gruencoder->hide[i].sig_update_transwh[j]);
-				gruencoder->hide[i].sig_replace_wh[j]+=clipgrad(learningrate*gruencoder->hide[i].sig_replace_transwh[j]);
-				gruencoder->hide[i].tan_replace_wh[j]+=clipgrad(learningrate*gruencoder->hide[i].tan_replace_transwh[j]);
+				gruencoder->hide[i].sig_update_wh[j]+=clipgrad(lr*gruencoder->hide[i].sig_update_transwh[j]);
+				gruencoder->hide[i].sig_replace_wh[j]+=clipgrad(lr*gruencoder->hide[i].sig_replace_transwh[j]);
+				gruencoder->hide[i].tan_replace_wh[j]+=clipgrad(lr*gruencoder->hide[i].tan_replace_transwh[j]);
 			}
 		}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia+=clipgrad(learningrate*output[i].diff);
+			output[i].bia+=clipgrad(lr*output[i].diff);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]+=clipgrad(learningrate*output[i].diff*gruencoder->hide[j].out[T]);
+				output[i].w[j]+=clipgrad(lr*output[i].diff*gruencoder->hide[j].out[T]);
 		}
 		return;
 	}
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 }
@@ -540,7 +540,7 @@ void NormalSeq2Vec::Datain(const char *__Typename,const char *EncoderFile,const 
 		gruencoder->Datain(EncoderFile);
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 	ifstream fin(OutputFile);
@@ -563,7 +563,7 @@ void NormalSeq2Vec::Dataout(const char *__Typename,const char *EncoderFile,const
 		gruencoder->Dataout(EncoderFile);
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 	ofstream fout(OutputFile);
@@ -598,7 +598,7 @@ void DeepSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,const
 		ifstream fin_t(Trainingdata);
 		if(fin_seq.fail()||fin_t.fail())
 		{
-			cout<<">> [Error]Cannot open data file!"<<endl;
+			cout<<">> [Error] Cannot open data file!"<<endl;
 			cout<<">> [Lack] "<<Sequencedata<<" and "<<Trainingdata<<endl;
 			exit(-1);
 		}
@@ -636,9 +636,9 @@ void DeepSeq2Vec::TotalWork(const char *__Typename,const char *EncoderFile,const
 		fin_seq.close();
 		fin_t.close();
 	}
-	cout<<">>Final output in progress..."<<endl;
+	cout<<">> Final output in progress..."<<endl;
 	Dataout(__Typename,EncoderFile,OutputFile);
-	cout<<">>Training complete."<<endl;
+	cout<<">> Training complete."<<endl;
 	return;
 }
 
@@ -655,21 +655,21 @@ DeepSeq2Vec::DeepSeq2Vec(const char* __Typename,int InputlayerNum,int Hiddenlaye
 	if(strcmp(__Typename,"rnn")==0)
 	{
 		rnnencoder=new DeepRNN(INUM,HNUM,DEPTH+1,MAXTIME);
-		rnnencoder->INIT();
+		rnnencoder->Init();
 	}
 	else if(strcmp(__Typename,"lstm")==0)
 	{
 		lstmencoder=new DeepLSTM(INUM,HNUM,DEPTH+1,MAXTIME);
-		lstmencoder->INIT();
+		lstmencoder->Init();
 	}
 	else if(strcmp(__Typename,"gru")==0)
 	{
 		gruencoder=new DeepGRU(INUM,HNUM,DEPTH+1,MAXTIME);
-		gruencoder->INIT();
+		gruencoder->Init();
 	}
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 	expect=new double[ONUM];
@@ -713,7 +713,7 @@ void DeepSeq2Vec::SetFunction(const char *FunctionName)
 
 void DeepSeq2Vec::SetLearningRate(const double __lr)
 {
-	learningrate=__lr;
+	lr=__lr;
 }
 
 void DeepSeq2Vec::Calc(const char* __Typename,const int T)
@@ -901,7 +901,7 @@ void DeepSeq2Vec::Calc(const char* __Typename,const int T)
 	}
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 }
@@ -1012,27 +1012,27 @@ void DeepSeq2Vec::Training(const char* __Typename,const int T)
 		
 		for(int i=0;i<HNUM;i++)
 		{
-			rnnencoder->hlink[i].bia+=clipgrad(learningrate*rnnencoder->hlink[i].transbia);
+			rnnencoder->hlink[i].bia+=clipgrad(lr*rnnencoder->hlink[i].transbia);
 			for(int j=0;j<INUM;j++)
-				rnnencoder->hlink[i].wi[j]+=clipgrad(learningrate*rnnencoder->hlink[i].transwi[j]);
+				rnnencoder->hlink[i].wi[j]+=clipgrad(lr*rnnencoder->hlink[i].transwi[j]);
 			for(int j=0;j<HNUM;j++)
-				rnnencoder->hlink[i].wh[j]+=clipgrad(learningrate*rnnencoder->hlink[i].transwh[j]);
+				rnnencoder->hlink[i].wh[j]+=clipgrad(lr*rnnencoder->hlink[i].transwh[j]);
 		}
 		for(int d=0;d<DEPTH;d++)
 				for(int i=0;i<HNUM;i++)
 				{
-					rnnencoder->hide[i][d].bia+=clipgrad(learningrate*rnnencoder->hide[i][d].transbia);
+					rnnencoder->hide[i][d].bia+=clipgrad(lr*rnnencoder->hide[i][d].transbia);
 					for(int j=0;j<HNUM;j++)
 					{
-						rnnencoder->hide[i][d].wi[j]+=clipgrad(learningrate*rnnencoder->hide[i][d].transwi[j]);
-						rnnencoder->hide[i][d].wh[j]+=clipgrad(learningrate*rnnencoder->hide[i][d].transwh[j]);
+						rnnencoder->hide[i][d].wi[j]+=clipgrad(lr*rnnencoder->hide[i][d].transwi[j]);
+						rnnencoder->hide[i][d].wh[j]+=clipgrad(lr*rnnencoder->hide[i][d].transwh[j]);
 					}
 				}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia+=clipgrad(learningrate*output[i].diff);
+			output[i].bia+=clipgrad(lr*output[i].diff);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]+=clipgrad(learningrate*output[i].diff*rnnencoder->hide[j][DEPTH-1].out[T]);
+				output[i].w[j]+=clipgrad(lr*output[i].diff*rnnencoder->hide[j][DEPTH-1].out[T]);
 		}
 		return;
 	}
@@ -1205,51 +1205,51 @@ void DeepSeq2Vec::Training(const char* __Typename,const int T)
 	
 		for(int i=0;i<HNUM;i++)
 		{
-			lstmencoder->hlink[i].fog_bia+=clipgrad(learningrate*lstmencoder->hlink[i].fog_transbia);
-			lstmencoder->hlink[i].sig_bia+=clipgrad(learningrate*lstmencoder->hlink[i].sig_transbia);
-			lstmencoder->hlink[i].tan_bia+=clipgrad(learningrate*lstmencoder->hlink[i].tan_transbia);
-			lstmencoder->hlink[i].out_bia+=clipgrad(learningrate*lstmencoder->hlink[i].out_transbia);
+			lstmencoder->hlink[i].fog_bia+=clipgrad(lr*lstmencoder->hlink[i].fog_transbia);
+			lstmencoder->hlink[i].sig_bia+=clipgrad(lr*lstmencoder->hlink[i].sig_transbia);
+			lstmencoder->hlink[i].tan_bia+=clipgrad(lr*lstmencoder->hlink[i].tan_transbia);
+			lstmencoder->hlink[i].out_bia+=clipgrad(lr*lstmencoder->hlink[i].out_transbia);
 			for(int j=0;j<INUM;j++)
 			{
-				lstmencoder->hlink[i].fog_wi[j]+=clipgrad(learningrate*lstmencoder->hlink[i].fog_transwi[j]);
-				lstmencoder->hlink[i].sig_wi[j]+=clipgrad(learningrate*lstmencoder->hlink[i].sig_transwi[j]);
-				lstmencoder->hlink[i].tan_wi[j]+=clipgrad(learningrate*lstmencoder->hlink[i].tan_transwi[j]);
-				lstmencoder->hlink[i].out_wi[j]+=clipgrad(learningrate*lstmencoder->hlink[i].out_transwi[j]);
+				lstmencoder->hlink[i].fog_wi[j]+=clipgrad(lr*lstmencoder->hlink[i].fog_transwi[j]);
+				lstmencoder->hlink[i].sig_wi[j]+=clipgrad(lr*lstmencoder->hlink[i].sig_transwi[j]);
+				lstmencoder->hlink[i].tan_wi[j]+=clipgrad(lr*lstmencoder->hlink[i].tan_transwi[j]);
+				lstmencoder->hlink[i].out_wi[j]+=clipgrad(lr*lstmencoder->hlink[i].out_transwi[j]);
 			}
 			for(int j=0;j<HNUM;j++)
 			{
-				lstmencoder->hlink[i].fog_wh[j]+=clipgrad(learningrate*lstmencoder->hlink[i].fog_transwh[j]);
-				lstmencoder->hlink[i].sig_wh[j]+=clipgrad(learningrate*lstmencoder->hlink[i].sig_transwh[j]);
-				lstmencoder->hlink[i].tan_wh[j]+=clipgrad(learningrate*lstmencoder->hlink[i].tan_transwh[j]);
-				lstmencoder->hlink[i].out_wh[j]+=clipgrad(learningrate*lstmencoder->hlink[i].out_transwh[j]);
+				lstmencoder->hlink[i].fog_wh[j]+=clipgrad(lr*lstmencoder->hlink[i].fog_transwh[j]);
+				lstmencoder->hlink[i].sig_wh[j]+=clipgrad(lr*lstmencoder->hlink[i].sig_transwh[j]);
+				lstmencoder->hlink[i].tan_wh[j]+=clipgrad(lr*lstmencoder->hlink[i].tan_transwh[j]);
+				lstmencoder->hlink[i].out_wh[j]+=clipgrad(lr*lstmencoder->hlink[i].out_transwh[j]);
 			}
 		}
 		for(int d=0;d<DEPTH;d++)
 		{
 				for(int i=0;i<HNUM;i++)
 				{
-					lstmencoder->hide[i][d].fog_bia+=clipgrad(learningrate*lstmencoder->hide[i][d].fog_transbia);
-					lstmencoder->hide[i][d].sig_bia+=clipgrad(learningrate*lstmencoder->hide[i][d].sig_transbia);
-					lstmencoder->hide[i][d].tan_bia+=clipgrad(learningrate*lstmencoder->hide[i][d].tan_transbia);
-					lstmencoder->hide[i][d].out_bia+=clipgrad(learningrate*lstmencoder->hide[i][d].out_transbia);
+					lstmencoder->hide[i][d].fog_bia+=clipgrad(lr*lstmencoder->hide[i][d].fog_transbia);
+					lstmencoder->hide[i][d].sig_bia+=clipgrad(lr*lstmencoder->hide[i][d].sig_transbia);
+					lstmencoder->hide[i][d].tan_bia+=clipgrad(lr*lstmencoder->hide[i][d].tan_transbia);
+					lstmencoder->hide[i][d].out_bia+=clipgrad(lr*lstmencoder->hide[i][d].out_transbia);
 					for(int j=0;j<HNUM;j++)
 					{
-						lstmencoder->hide[i][d].fog_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].fog_transwi[j]);
-						lstmencoder->hide[i][d].sig_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].sig_transwi[j]);
-						lstmencoder->hide[i][d].tan_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].tan_transwi[j]);
-						lstmencoder->hide[i][d].out_wi[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].out_transwi[j]);
-						lstmencoder->hide[i][d].fog_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].fog_transwh[j]);
-						lstmencoder->hide[i][d].sig_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].sig_transwh[j]);
-						lstmencoder->hide[i][d].tan_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].tan_transwh[j]);
-						lstmencoder->hide[i][d].out_wh[j]+=clipgrad(learningrate*lstmencoder->hide[i][d].out_transwh[j]);
+						lstmencoder->hide[i][d].fog_wi[j]+=clipgrad(lr*lstmencoder->hide[i][d].fog_transwi[j]);
+						lstmencoder->hide[i][d].sig_wi[j]+=clipgrad(lr*lstmencoder->hide[i][d].sig_transwi[j]);
+						lstmencoder->hide[i][d].tan_wi[j]+=clipgrad(lr*lstmencoder->hide[i][d].tan_transwi[j]);
+						lstmencoder->hide[i][d].out_wi[j]+=clipgrad(lr*lstmencoder->hide[i][d].out_transwi[j]);
+						lstmencoder->hide[i][d].fog_wh[j]+=clipgrad(lr*lstmencoder->hide[i][d].fog_transwh[j]);
+						lstmencoder->hide[i][d].sig_wh[j]+=clipgrad(lr*lstmencoder->hide[i][d].sig_transwh[j]);
+						lstmencoder->hide[i][d].tan_wh[j]+=clipgrad(lr*lstmencoder->hide[i][d].tan_transwh[j]);
+						lstmencoder->hide[i][d].out_wh[j]+=clipgrad(lr*lstmencoder->hide[i][d].out_transwh[j]);
 					}
 				}
 		}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia+=clipgrad(learningrate*output[i].diff);
+			output[i].bia+=clipgrad(lr*output[i].diff);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]+=clipgrad(learningrate*output[i].diff*lstmencoder->hide[j][DEPTH-1].out[T]);
+				output[i].w[j]+=clipgrad(lr*output[i].diff*lstmencoder->hide[j][DEPTH-1].out[T]);
 		}
 		return;
 	}
@@ -1393,49 +1393,49 @@ void DeepSeq2Vec::Training(const char* __Typename,const int T)
 		for(int d=0;d<DEPTH-1;d++)
 			for(int i=0;i<HNUM;i++)
 			{
-				gruencoder->hide[i][d].sig_update_bia+=clipgrad(learningrate*gruencoder->hide[i][d].sig_update_transbia);
-				gruencoder->hide[i][d].sig_replace_bia+=clipgrad(learningrate*gruencoder->hide[i][d].sig_replace_transbia);
-				gruencoder->hide[i][d].tan_replace_bia+=clipgrad(learningrate*gruencoder->hide[i][d].tan_replace_transbia);
+				gruencoder->hide[i][d].sig_update_bia+=clipgrad(lr*gruencoder->hide[i][d].sig_update_transbia);
+				gruencoder->hide[i][d].sig_replace_bia+=clipgrad(lr*gruencoder->hide[i][d].sig_replace_transbia);
+				gruencoder->hide[i][d].tan_replace_bia+=clipgrad(lr*gruencoder->hide[i][d].tan_replace_transbia);
 				for(int j=0;j<HNUM;j++)
 				{
-					gruencoder->hide[i][d].sig_update_wi[j]+=clipgrad(learningrate*gruencoder->hide[i][d].sig_update_transwi[j]);
-					gruencoder->hide[i][d].sig_replace_wi[j]+=clipgrad(learningrate*gruencoder->hide[i][d].sig_replace_transwi[j]);
-					gruencoder->hide[i][d].tan_replace_wi[j]+=clipgrad(learningrate*gruencoder->hide[i][d].tan_replace_transwi[j]);
+					gruencoder->hide[i][d].sig_update_wi[j]+=clipgrad(lr*gruencoder->hide[i][d].sig_update_transwi[j]);
+					gruencoder->hide[i][d].sig_replace_wi[j]+=clipgrad(lr*gruencoder->hide[i][d].sig_replace_transwi[j]);
+					gruencoder->hide[i][d].tan_replace_wi[j]+=clipgrad(lr*gruencoder->hide[i][d].tan_replace_transwi[j]);
 	
-					gruencoder->hide[i][d].sig_update_wh[j]+=clipgrad(learningrate*gruencoder->hide[i][d].sig_update_transwh[j]);
-					gruencoder->hide[i][d].sig_replace_wh[j]+=clipgrad(learningrate*gruencoder->hide[i][d].sig_replace_transwh[j]);
-					gruencoder->hide[i][d].tan_replace_wh[j]+=clipgrad(learningrate*gruencoder->hide[i][d].tan_replace_transwh[j]);
+					gruencoder->hide[i][d].sig_update_wh[j]+=clipgrad(lr*gruencoder->hide[i][d].sig_update_transwh[j]);
+					gruencoder->hide[i][d].sig_replace_wh[j]+=clipgrad(lr*gruencoder->hide[i][d].sig_replace_transwh[j]);
+					gruencoder->hide[i][d].tan_replace_wh[j]+=clipgrad(lr*gruencoder->hide[i][d].tan_replace_transwh[j]);
 				}
 			}
 		for(int i=0;i<HNUM;i++)
 		{
-			gruencoder->hlink[i].sig_update_bia+=clipgrad(learningrate*gruencoder->hlink[i].sig_update_transbia);
-			gruencoder->hlink[i].sig_replace_bia+=clipgrad(learningrate*gruencoder->hlink[i].sig_replace_transbia);
-			gruencoder->hlink[i].tan_replace_bia+=clipgrad(learningrate*gruencoder->hlink[i].tan_replace_transbia);
+			gruencoder->hlink[i].sig_update_bia+=clipgrad(lr*gruencoder->hlink[i].sig_update_transbia);
+			gruencoder->hlink[i].sig_replace_bia+=clipgrad(lr*gruencoder->hlink[i].sig_replace_transbia);
+			gruencoder->hlink[i].tan_replace_bia+=clipgrad(lr*gruencoder->hlink[i].tan_replace_transbia);
 			for(int j=0;j<INUM;j++)
 			{
-				gruencoder->hlink[i].sig_update_wi[j]+=clipgrad(learningrate*gruencoder->hlink[i].sig_update_transwi[j]);
-				gruencoder->hlink[i].sig_replace_wi[j]+=clipgrad(learningrate*gruencoder->hlink[i].sig_replace_transwi[j]);
-				gruencoder->hlink[i].tan_replace_wi[j]+=clipgrad(learningrate*gruencoder->hlink[i].tan_replace_transwi[j]);
+				gruencoder->hlink[i].sig_update_wi[j]+=clipgrad(lr*gruencoder->hlink[i].sig_update_transwi[j]);
+				gruencoder->hlink[i].sig_replace_wi[j]+=clipgrad(lr*gruencoder->hlink[i].sig_replace_transwi[j]);
+				gruencoder->hlink[i].tan_replace_wi[j]+=clipgrad(lr*gruencoder->hlink[i].tan_replace_transwi[j]);
 			}
 			for(int j=0;j<HNUM;j++)
 			{
-				gruencoder->hlink[i].sig_update_wh[j]+=clipgrad(learningrate*gruencoder->hlink[i].sig_update_transwh[j]);
-				gruencoder->hlink[i].sig_replace_wh[j]+=clipgrad(learningrate*gruencoder->hlink[i].sig_replace_transwh[j]);
-				gruencoder->hlink[i].tan_replace_wh[j]+=clipgrad(learningrate*gruencoder->hlink[i].tan_replace_transwh[j]);
+				gruencoder->hlink[i].sig_update_wh[j]+=clipgrad(lr*gruencoder->hlink[i].sig_update_transwh[j]);
+				gruencoder->hlink[i].sig_replace_wh[j]+=clipgrad(lr*gruencoder->hlink[i].sig_replace_transwh[j]);
+				gruencoder->hlink[i].tan_replace_wh[j]+=clipgrad(lr*gruencoder->hlink[i].tan_replace_transwh[j]);
 			}
 		}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia+=clipgrad(learningrate*output[i].diff);
+			output[i].bia+=clipgrad(lr*output[i].diff);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]+=clipgrad(learningrate*output[i].diff*gruencoder->hide[j][DEPTH-1].out[T]);
+				output[i].w[j]+=clipgrad(lr*output[i].diff*gruencoder->hide[j][DEPTH-1].out[T]);
 		}
 		return;
 	}
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 }
@@ -1463,7 +1463,7 @@ void DeepSeq2Vec::Datain(const char *__Typename,const char *EncoderFile,const ch
 		gruencoder->Datain(EncoderFile);
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 	ifstream fin(OutputFile);
@@ -1486,7 +1486,7 @@ void DeepSeq2Vec::Dataout(const char *__Typename,const char *EncoderFile,const c
 		gruencoder->Dataout(EncoderFile);
 	else
 	{
-		cout<<">> [Error]Unknown neural network name."<<endl;
+		cout<<">> [Error] Unknown neural network name."<<endl;
 		exit(-1);
 	}
 	ofstream fout(OutputFile);
@@ -1508,7 +1508,7 @@ void Seq2VecDataMaker(const char *Filename,const char *Sequencedata,const char *
 	ofstream fout_t(Trainingdata);
 	if(fin.fail()||fout_seq.fail()||fout_t.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	getline(fin,txt);
@@ -1535,5 +1535,5 @@ void Seq2VecDataMaker(const char *Filename,const char *Sequencedata,const char *
 	fin.close();
 	fout_seq.close();
 	fout_t.close();
-	cout<<">>Data making complete."<<endl;
+	cout<<">> Data making complete."<<endl;
 }

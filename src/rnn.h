@@ -19,7 +19,7 @@ public:
 	rnn_neuron *hide;
 	NormalRNN(int,int,int);
 	~NormalRNN();
-	void INIT();
+	void Init();
 	void Datain(const char*);
 	void Dataout(const char*);
 };
@@ -35,7 +35,7 @@ public:
 	rnn_neuron **hide;
 	DeepRNN(int,int,int,int);
 	~DeepRNN();
-	void INIT();
+	void Init();
 	void Datain(const char*);
 	void Dataout(const char*);
 };

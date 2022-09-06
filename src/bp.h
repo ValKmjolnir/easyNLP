@@ -27,7 +27,7 @@ private:
 	neuron *output;
 	double *input;
 	double *expect;
-	double learningrate;
+	double lr;
 	double error;
 	string func_name;
 	double ActivateFunction(double);
@@ -35,16 +35,16 @@ private:
 public:
 	NormalBP(int,int,int);
 	~NormalBP();
-	void INIT();
+	void Init();
 	void Calc();
 	void ErrorCalc();
 	double GetError();
 	void Training();
-	void Datain(const char*);
-	void Dataout(const char*);
-	void SetFunction(const char*);
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
+	void SetFunction(const std::string&);
 	void SetLearningrate(double);
-	void TotalWork(const char*,const char*,const char*);
+	void TotalWork(const std::string&,const std::string&,const std::string&);
 };
 class DeepBP
 {
@@ -59,7 +59,7 @@ private:
 	neuron *output;
 	double *input;
 	double *expect;
-	double learningrate;
+	double lr;
 	double error;
 	string func_name;
 	double ActivateFunction(double);
@@ -67,16 +67,16 @@ private:
 public:
 	DeepBP(int,int,int,int);
 	~DeepBP();
-	void INIT();
+	void Init();
 	void Calc();
 	void ErrorCalc();
 	double GetError();
 	void Training();
-	void Datain(const char*);
-	void Dataout(const char*);
-	void SetFunction(const char*);
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
+	void SetFunction(const std::string&);
 	void SetLearningrate(double);
-	void TotalWork(const char*,const char*,const char*);
+	void TotalWork(const std::string&,const std::string&,const std::string&);
 };
 
 #endif

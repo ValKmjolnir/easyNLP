@@ -42,7 +42,7 @@ NormalRNN::~NormalRNN()
     delete []hide;
 }
 
-void NormalRNN::INIT()
+void NormalRNN::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -62,7 +62,7 @@ void NormalRNN::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -83,7 +83,7 @@ void NormalRNN::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -162,7 +162,7 @@ DeepRNN::~DeepRNN()
     delete []hide;
 }
 
-void DeepRNN::INIT()
+void DeepRNN::Init()
 {
 	srand(unsigned(time(NULL)));
 	for(int i=0;i<HNUM;i++)
@@ -193,7 +193,7 @@ void DeepRNN::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -225,7 +225,7 @@ void DeepRNN::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)

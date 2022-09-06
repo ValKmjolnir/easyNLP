@@ -6,9 +6,9 @@
 #include <fstream>
 #include <cmath>
 #include <cstdlib>
+#include <vector>
 #include "bp.h"
 #include "actvfunc.h"
-using namespace std;
 
 class Char2Vec
 {
@@ -17,25 +17,25 @@ private:
 	int HNUM;
 	int ONUM;
 	int **cnt;
-	double *input;
-	double *expect;
-	double learningrate;
-	neuron *hide;
-	neuron *output;
+	std::vector<double> input;
+	std::vector<double> expect;
+	double lr;
+	std::vector<neuron> hide;
+	std::vector<neuron> output;
 public:
-	Char2Vec(const int __Hnum=256)
+	Char2Vec(const int hnum=256)
 	{
-		learningrate=0.1;
+		lr=0.1;
 		INUM=95;
 		ONUM=95;
-		HNUM=__Hnum;
+		HNUM=hnum;
 		cnt=new int*[95];
 		for(int i=0;i<95;i++)
 			cnt[i]=new int[95];
-		expect= new double[95];
-		input = new double[95];
-		hide=new neuron[HNUM];
-		output=new neuron[ONUM];
+		input.resize(95);
+		expect.resize(95);
+		hide.resize(HNUM);
+		output.resize(ONUM);
 		for(int i=0;i<HNUM;i++)
 			hide[i].w=new double[INUM];
 		for(int i=0;i<ONUM;i++)
@@ -61,32 +61,28 @@ public:
 		for(int i=0;i<95;i++)
 			delete []cnt[i];
 		delete []cnt;
-		delete []expect;
-		delete []input;
 		for(int i=0;i<HNUM;i++)
 			delete []hide[i].w;
-		delete []hide;
 		for(int i=0;i<ONUM;i++)
 			delete []output[i].w;
-		delete []output;
 	}
-	void TotalWork(const char*,const char*);
-	void Mainwork(const char*);
+	void TotalWork(const std::string&,const std::string&);
+	void Mainwork(const std::string&);
 	void Calc();
 	void Training();
-	void Datain(const char*);
-	void Dataout(const char*);
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
 	void Print();
-	void CountChar(const char*);
-	void CharDataIllustration(const char*);
+	void CountChar(const std::string&);
+	void CharDataIllustration(const std::string&);
 };
 
-void Char2Vec::TotalWork(const char *dataFilename,const char *TrainingdataName)
+void Char2Vec::TotalWork(const std::string& dataFilename,const std::string& TrainingdataName)
 {
-	if(!fopen(dataFilename,"r"))
+	if(!fopen(dataFilename.c_str(),"r"))
 	{
 		Dataout(dataFilename);
-		cout<<">> [Char2Vec-95char] Initializing completed.\n";
+		std::cout<<">> [Char2Vec-95char] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -95,7 +91,7 @@ void Char2Vec::TotalWork(const char *dataFilename,const char *TrainingdataName)
 	Print();
 }
 
-void Char2Vec::Mainwork(const char *Filename)
+void Char2Vec::Mainwork(const std::string& filename)
 {
 	int epoch=0;
 	double maxerror=1e8;
@@ -125,14 +121,14 @@ void Char2Vec::Mainwork(const char *Filename)
 		}
 		if(epoch%10==0)
 		{
-			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
 			if(epoch%50==0)
-				Dataout(Filename);
+				Dataout(filename);
 		}
 	}
-	cout<<">>Final output in progress..."<<endl;
-	Dataout(Filename);
-	cout<<">>Training complete."<<endl;
+	std::cout<<">> Final output in progress..."<<std::endl;
+	Dataout(filename);
+	std::cout<<">> Training complete."<<std::endl;
 	return;
 }
 void Char2Vec::Calc()
@@ -168,24 +164,24 @@ void Char2Vec::Training()
 	}
 	for(int i=0;i<ONUM;i++)
 	{
-		output[i].bia+=learningrate*2*output[i].diff;
+		output[i].bia+=lr*2*output[i].diff;
 		for(int j=0;j<HNUM;j++)
-			output[i].w[j]+=learningrate*output[i].diff*hide[j].out;
+			output[i].w[j]+=lr*output[i].diff*hide[j].out;
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		hide[i].bia+=learningrate*2*hide[i].diff;
+		hide[i].bia+=lr*2*hide[i].diff;
 		for(int j=0;j<INUM;j++)
-			hide[i].w[j]+=learningrate*hide[i].diff*input[j];
+			hide[i].w[j]+=lr*hide[i].diff*input[j];
 	}
 	return;
 }
-void Char2Vec::Datain(const char *Filename)
+void Char2Vec::Datain(const std::string& filename)
 {
-	ifstream fin(Filename);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open data file!"<<endl;
+		std::cout<<">> [Error] Cannot open data file!"<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -203,58 +199,66 @@ void Char2Vec::Datain(const char *Filename)
 	fin.close();
 	return;
 }
-void Char2Vec::Dataout(const char *Filename)
+void Char2Vec::Dataout(const std::string& filename)
 {
-	ofstream fout(Filename);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open data file!"<<endl;
+		std::cout<<">> [Error] Cannot open data file!"<<std::endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
-		fout<<hide[i].bia<<endl;
+		fout<<hide[i].bia<<std::endl;
 		for(int j=0;j<INUM;j++)
-			fout<<hide[i].w[j]<<endl;
+			fout<<hide[i].w[j]<<std::endl;
 	}
 	for(int i=0;i<ONUM;i++)
 	{
-		fout<<output[i].bia<<endl;
+		fout<<output[i].bia<<std::endl;
 		for(int j=0;j<HNUM;j++)
-			fout<<output[i].w[j]<<endl;
+			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
-	cout<<">>Output Finished.\n";
+	std::cout<<">> Output Finished.\n";
 	return;
 }
 void Char2Vec::Print()
 {
-	cout<<">> [Result-Char2Vec-95char]"<<endl;
+	std::cout<<">> [Result-Char2Vec-95char]"<<std::endl;
 	for(int i=0;i<95;i++)
 	{
 		for(int j=0;j<INUM;j++)
 			input[j]=0;
 		input[i]=1;
 		Calc();
-		cout<<"        |"<<(char)(i+32)<<":  ";
+		bool has_related=false;
 		for(int j=0;j<ONUM;j++)
 			if(output[j].out>0.1)
-				cout<<"|"<<(char)(j+32)<<':'<<100*output[j].out<<"% ";
-		cout<<endl;
+			{
+				has_related=true;
+				break;
+			}
+		if(!has_related)
+			continue;
+		std::cout<<"   |"<<(char)(i+32)<<":  ";
+		for(int j=0;j<ONUM;j++)
+			if(output[j].out>0.1)
+				std::cout<<"|"<<(char)(j+32)<<':'<<100*output[j].out<<"% ";
+		std::cout<<std::endl;
 	}
 	return;
 }
-void Char2Vec::CountChar(const char *Filename)
+void Char2Vec::CountChar(const std::string& filename)
 {
 	for(int i=0;i<95;i++)
 		for(int j=0;j<95;j++)
 			cnt[i][j]=0;
 	char temp[1024];
-	ifstream fin(Filename);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
-		cout<<">> [Error]Cannot open data file!"<<endl;
-		cout<<">> [Lack] "<<Filename<<endl;
+		std::cout<<">> [Error] Cannot open data file!"<<std::endl;
 		exit(-1);
 	}
 	while(!fin.eof())
@@ -270,12 +274,12 @@ void Char2Vec::CountChar(const char *Filename)
 	}
 	return;
 }
-void Char2Vec::CharDataIllustration(const char* Filename)
+void Char2Vec::CharDataIllustration(const std::string& filename)
 {
-	fstream fout(Filename,ios::out);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
-		cout<<">> [Error]Cannot open data file!"<<endl;
+		std::cout<<">> [Error] Cannot open data file!"<<std::endl;
 		exit(-1);
 	}
 	fout<<"# ";
@@ -286,7 +290,7 @@ void Char2Vec::CharDataIllustration(const char* Filename)
 		else
 			fout<<(char)(i+32)<<' ';
 	}
-	fout<<endl;
+	fout<<std::endl;
 	for(int i=0;i<95;i++)
 	{
 		if(i==0)
@@ -295,7 +299,7 @@ void Char2Vec::CharDataIllustration(const char* Filename)
 			fout<<(char)(i+32)<<' ';
 		for(int j=0;j<95;j++)
 			fout<<cnt[i][j]/100.0<<' ';
-		fout<<endl;
+		fout<<std::endl;
 	}
 	fout.close();
 }

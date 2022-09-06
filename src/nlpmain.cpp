@@ -13,17 +13,17 @@
 void help(){
 	std::cout
 	<<">> [Help]"<<std::endl
-	<<"   | 1.| Delete a project      |"<<std::endl
-	<<"   | 2.| Create a new project  |"<<std::endl
-	<<"   | 3.| List all projects     |"<<std::endl
-	<<"   | 4.| Run a project         |"<<std::endl
-	<<"   | 5.| Find a project        |"<<std::endl
-	<<"   | 6.| Edit a project        |"<<std::endl
-	<<"   | 7.| Change learningrate   |"<<std::endl
-	<<"   | 8.| Change batch size     |"<<std::endl
-	<<"   | 9.| Make data for Seq2Vec |"<<std::endl
-	<<"   |10.| Find projects by type |"<<std::endl
-	<<"   |11.| Quit                  |"<<std::endl
+	<<"   |  d | Delete a project      |"<<std::endl
+	<<"   |  c | Create a new project  |"<<std::endl
+	<<"   |  l | List all projects     |"<<std::endl
+	<<"   |  r | Run a project         |"<<std::endl
+	<<"   |  f | Find a project        |"<<std::endl
+	<<"   |  e | Edit a project        |"<<std::endl
+	<<"   | lr | Change learning rate  |"<<std::endl
+	<<"   | bs | Change batch size     |"<<std::endl
+	<<"   | mk | Make data for Seq2Vec |"<<std::endl
+	<<"   | ft | Find projects by type |"<<std::endl
+	<<"   |  q | Quit                  |"<<std::endl
 	<<">> You can find this help with cmd:\"h\" or \"help\""<<std::endl;
 	return;
 }
@@ -65,24 +65,24 @@ int main(){
 		else if(cmd=="t"||cmd=="tips"){
 			warn();
 		}
-		else if(cmd=="1"){
+		else if(cmd=="d"){
 			manager.DeleteObj();
-		}else if(cmd=="2"){
+		}else if(cmd=="c"){
 			manager.MakeData();
 			manager.ObjDataOut();
-		}else if(cmd=="3"){
+		}else if(cmd=="l"){
 			manager.PrintAllObj();
-		}else if(cmd=="4"){
+		}else if(cmd=="r"){
 			manager.RunModule();
-		}else if(cmd=="5"){
+		}else if(cmd=="f"){
 			manager.FindObj();
-		}else if(cmd=="6"){
+		}else if(cmd=="e"){
 			manager.EditObj();
-		}else if(cmd=="7"){
+		}else if(cmd=="lr"){
 			manager.ChangeLearningRate();
-		}else if(cmd=="8"){
+		}else if(cmd=="bs"){
 			manager.ChangeBatchSize();
-		}else if(cmd=="9"){
+		}else if(cmd=="mk"){
 			int maxtime;
 			char Filename[100];
 			char Sequencedata[100];
@@ -94,18 +94,18 @@ int main(){
 			std::cout<<">> Please input the name of training data:";
 			cin>>Trainingdata;
 			if(!fopen(Filename,"r")||!fopen(Sequencedata,"w")||!fopen(Trainingdata,"w")){
-				std::cout<<">> [Error]Cannot open file."<<std::endl;
+				std::cout<<">> [Error] Cannot open file."<<std::endl;
 			}else{
 				std::cout<<">> Please input the length of every input sequence:";
 				cin>>maxtime;
 				Seq2VecDataMaker(Filename,Sequencedata,Trainingdata,maxtime);
 			}
-		}else if(cmd=="10"){
+		}else if(cmd=="ft"){
 			char Typename[100];
 			std::cout<<">> Which type of networks would you like to find?\neasyNLP>>";
 			cin>>Typename;
 			manager.FindSpecialObj(Typename);
-		}else if(cmd=="11"){
+		}else if(cmd=="q"){
 			std::cout<<">> [Quiting] Please wait."<<std::endl;
 			manager.ObjDataOut();
 			break;
