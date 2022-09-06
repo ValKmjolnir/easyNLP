@@ -1,14 +1,11 @@
 /*lstmfunction.h header file made by ValK*/
 /*2019/5/9                    version 1.2*/
-#ifndef __LSTMFUNCTION_H__
-#define __LSTMFUNCTION_H__
-
 #include "lstm.h"
 
-#include<iostream>
-#include<ctime>
-#include<fstream>
-#include<cstdlib>
+#include <iostream>
+#include <ctime>
+#include <fstream>
+#include <cstdlib>
 using namespace std;
 
 NormalLSTM::NormalLSTM(int InputlayerNum,int HiddenlayerNum,int Maxtime)
@@ -137,9 +134,8 @@ void NormalLSTM::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -173,9 +169,8 @@ void NormalLSTM::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -453,9 +448,8 @@ void DeepLSTM::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -511,9 +505,8 @@ void DeepLSTM::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -563,4 +556,3 @@ void DeepLSTM::Dataout(const char* FILENAME)
 	fout.close();
 	return;
 }
-#endif

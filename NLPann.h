@@ -7,6 +7,9 @@
 #include "rnn.h"
 #include "lstm.h"
 #include "gru.h"
-#include "activatefunction.h"
+#include "actvfunc.h"
+#include "seq2seq.h"
+#include "seq2vec.h"
+#include "char2vec.h"
 
 #endif

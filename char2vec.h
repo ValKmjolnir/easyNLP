@@ -2,83 +2,83 @@
 /*2019/5/2               version 1.1*/
 #ifndef __CHAR2VEC_H__
 #define __CHAR2VEC_H__
-#include<iostream>
-#include<fstream>
-#include<cmath>
-#include<cstdlib>
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <cstdlib>
 #include "bp.h"
-#include "activatefunction.h"
+#include "actvfunc.h"
 using namespace std;
 
 class Char2Vec
 {
-	private:
-		int INUM;
-		int HNUM;
-		int ONUM;
-		int **cnt;
-		double *input;
-		double *expect;
-		double learningrate;
-		neuron *hide;
-		neuron *output;
-	public:
-		Char2Vec(const int __Hnum=256)
-		{
-			learningrate=0.1;
-			INUM=95;
-			ONUM=95;
-			HNUM=__Hnum;
-			cnt=new int*[95];
-			for(int i=0;i<95;i++)
-				cnt[i]=new int[95];
-			expect= new double[95];
-			input = new double[95];
-			hide=new neuron[HNUM];
-			output=new neuron[ONUM];
-			for(int i=0;i<HNUM;i++)
-				hide[i].w=new double[INUM];
-			for(int i=0;i<ONUM;i++)
-				output[i].w=new double[HNUM];
+private:
+	int INUM;
+	int HNUM;
+	int ONUM;
+	int **cnt;
+	double *input;
+	double *expect;
+	double learningrate;
+	neuron *hide;
+	neuron *output;
+public:
+	Char2Vec(const int __Hnum=256)
+	{
+		learningrate=0.1;
+		INUM=95;
+		ONUM=95;
+		HNUM=__Hnum;
+		cnt=new int*[95];
+		for(int i=0;i<95;i++)
+			cnt[i]=new int[95];
+		expect= new double[95];
+		input = new double[95];
+		hide=new neuron[HNUM];
+		output=new neuron[ONUM];
+		for(int i=0;i<HNUM;i++)
+			hide[i].w=new double[INUM];
+		for(int i=0;i<ONUM;i++)
+			output[i].w=new double[HNUM];
 
-			srand(unsigned(time(NULL)));
-			for(int i=0;i<HNUM;i++)
-			{
-				hide[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)*0.1;
-				for(int j=0;j<INUM;j++)
-					hide[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)*0.02;
-			}
-			for(int i=0;i<ONUM;i++)
-			{
-				output[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)*0.1;
-				for(int j=0;j<HNUM;j++)
-					output[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)*0.02;
-			}
-			return;
-		}
-		~Char2Vec()
+		srand(unsigned(time(NULL)));
+		for(int i=0;i<HNUM;i++)
 		{
-			for(int i=0;i<95;i++)
-				delete []cnt[i];
-			delete []cnt;
-			delete []expect;
-			delete []input;
-			for(int i=0;i<HNUM;i++)
-				delete []hide[i].w;
-			delete []hide;
-			for(int i=0;i<ONUM;i++)
-				delete []output[i].w;
-			delete []output;
+			hide[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)*0.1;
+			for(int j=0;j<INUM;j++)
+				hide[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)*0.02;
 		}
-		void TotalWork(const char*,const char*);
-		void Mainwork(const char*);
-		void Calc();
-		void Training();
-		void Datain(const char*);
-		void Dataout(const char*);
-		void Print();
-		void CountChar(const char*);
-		void CharDataIllustration(const char*);
+		for(int i=0;i<ONUM;i++)
+		{
+			output[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)*0.1;
+			for(int j=0;j<HNUM;j++)
+				output[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)*0.02;
+		}
+		return;
+	}
+	~Char2Vec()
+	{
+		for(int i=0;i<95;i++)
+			delete []cnt[i];
+		delete []cnt;
+		delete []expect;
+		delete []input;
+		for(int i=0;i<HNUM;i++)
+			delete []hide[i].w;
+		delete []hide;
+		for(int i=0;i<ONUM;i++)
+			delete []output[i].w;
+		delete []output;
+	}
+	void TotalWork(const char*,const char*);
+	void Mainwork(const char*);
+	void Calc();
+	void Training();
+	void Datain(const char*);
+	void Dataout(const char*);
+	void Print();
+	void CountChar(const char*);
+	void CharDataIllustration(const char*);
 };
 
 void Char2Vec::TotalWork(const char *dataFilename,const char *TrainingdataName)
@@ -86,7 +86,7 @@ void Char2Vec::TotalWork(const char *dataFilename,const char *TrainingdataName)
 	if(!fopen(dataFilename,"r"))
 	{
 		Dataout(dataFilename);
-		cout<<"easyNLP>>[Char2Vec-95char] Initializing completed.\n";
+		cout<<"easyNLP>> [Char2Vec-95char] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -185,9 +185,8 @@ void Char2Vec::Datain(const char *Filename)
 	ifstream fin(Filename);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open data file!"<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -209,9 +208,8 @@ void Char2Vec::Dataout(const char *Filename)
 	ofstream fout(Filename);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open data file!"<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -231,14 +229,14 @@ void Char2Vec::Dataout(const char *Filename)
 }
 void Char2Vec::Print()
 {
-	cout<<"easyNLP>>[Result-Char2Vec-95char]"<<endl;
+	cout<<"easyNLP>> [Result-Char2Vec-95char]"<<endl;
 	for(int i=0;i<95;i++)
 	{
 		for(int j=0;j<INUM;j++)
 			input[j]=0;
 		input[i]=1;
 		Calc();
-	cout<<"        |"<<(char)(i+32)<<":  ";
+		cout<<"        |"<<(char)(i+32)<<":  ";
 		for(int j=0;j<ONUM;j++)
 			if(output[j].out>0.1)
 				cout<<"|"<<(char)(j+32)<<':'<<100*output[j].out<<"% ";
@@ -255,10 +253,9 @@ void Char2Vec::CountChar(const char *Filename)
 	ifstream fin(Filename);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
-		cout<<"easyNLP>>[Lack] "<<Filename<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open data file!"<<endl;
+		cout<<"easyNLP>> [Lack] "<<Filename<<endl;
+		exit(-1);
 	}
 	while(!fin.eof())
 	{
@@ -278,9 +275,8 @@ void Char2Vec::CharDataIllustration(const char* Filename)
 	fstream fout(Filename,ios::out);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open data file!"<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open data file!"<<endl;
+		exit(-1);
 	}
 	fout<<"# ";
 	for(int i=0;i<95;i++)

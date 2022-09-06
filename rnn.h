@@ -6,39 +6,38 @@
 struct rnn_neuron
 {
 	double *in,*out,bia,*wi,*wh,*diff;
-	double transdiff,*transwi,*transwh;
+	double transdiff,*transwi,*transwh,transbia;
 };
+
 class NormalRNN
 {
-	private:
-		int INUM;
-		int HNUM;
-		int MAXTIME;
-		rnn_neuron *hide;
-	public:
-		NormalRNN(int,int,int);
-		~NormalRNN();
-		void INIT();
-		void Datain(const char*);
-		void Dataout(const char*);
+protected:
+	int INUM;
+	int HNUM;
+	int MAXTIME;
+public:
+	rnn_neuron *hide;
+	NormalRNN(int,int,int);
+	~NormalRNN();
+	void INIT();
+	void Datain(const char*);
+	void Dataout(const char*);
 };
 class DeepRNN
 {
-	private:
-		int INUM;
-		int HNUM;
-		int DEPTH;
-		int MAXTIME;
-		rnn_neuron *hlink;
-		rnn_neuron **hide;
-	public:
-		DeepRNN(int,int,int,int);
-		~DeepRNN();
-		void INIT();
-		void Datain(const char*);
-		void Dataout(const char*);
+protected:
+	int INUM;
+	int HNUM;
+	int DEPTH;
+	int MAXTIME;
+public:
+	rnn_neuron *hlink;
+	rnn_neuron **hide;
+	DeepRNN(int,int,int,int);
+	~DeepRNN();
+	void INIT();
+	void Datain(const char*);
+	void Dataout(const char*);
 };
-
-#include "rnnfunction.h"
 
 #endif

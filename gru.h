@@ -2,7 +2,7 @@
 /*2019/5/7           version 1.1*/
 #ifndef __GRU_H__
 #define __GRU_H__
-#include"rnn.h"
+#include "rnn.h"
 
 struct gru_neuron
 {
@@ -18,30 +18,38 @@ struct gru_neuron
 	double *tan_replace_diff,*tan_replace_transwi,*tan_replace_transwh;
 };
 
-class NormalGRU:public RNN
+class NormalGRU
 {
-	public:
-		gru_neuron *hide;
-		NormalGRU(int,int,int);
-		~NormalGRU();
-		void INIT();
-		void Datain(const char*);
-		void Dataout(const char*);
+protected:
+	int INUM;
+	int HNUM;
+	int MAXTIME;
+public:
+	gru_neuron *hide;
+	NormalGRU(int,int,int);
+	~NormalGRU();
+	void INIT();
+	void Datain(const char*);
+	void Dataout(const char*);
 };
 
-class DeepGRU:public RNN
+class DeepGRU
 {
-	public:
-		gru_neuron *hlink;
-		gru_neuron **hide;
-		DeepGRU(int,int,int,int);
-		~DeepGRU();
-		void ConstructorAssist();
-		void DestructorAssist();
-		void INIT();
-		void Datain(const char*);
-		void Dataout(const char*);
+protected:
+	int INUM;
+	int HNUM;
+	int DEPTH;
+	int MAXTIME;
+public:
+	gru_neuron *hlink;
+	gru_neuron **hide;
+	DeepGRU(int,int,int,int);
+	~DeepGRU();
+	void ConstructorAssist();
+	void DestructorAssist();
+	void INIT();
+	void Datain(const char*);
+	void Dataout(const char*);
 };
-#include "grufunction.h"
 
 #endif

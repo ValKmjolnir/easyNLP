@@ -1,12 +1,11 @@
 /*grufunction.h header file made by ValK*/
 /*2019/5/9                   version 1.2*/
-#ifndef __GRUFUNCTION_H__
-#define __GRUFUNCTION_H__
 #include "gru.h"
-#include<iostream>
-#include<fstream>
-#include<cmath>
-#include<cstdlib>
+
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <cstdlib>
 using namespace std;
 
 NormalGRU::NormalGRU(int InputlayerNum,int HiddenlayerNum,int Maxtime)
@@ -76,9 +75,8 @@ void NormalGRU::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -108,9 +106,8 @@ void NormalGRU::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -259,9 +256,8 @@ void DeepGRU::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -308,9 +304,8 @@ void DeepGRU::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -351,4 +346,3 @@ void DeepGRU::Dataout(const char* FILENAME)
 	fout.close();
 	return;
 }
-#endif

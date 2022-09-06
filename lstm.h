@@ -2,7 +2,7 @@
 /*2019/5/7            version 1.1*/
 #ifndef __LSTM_H__
 #define __LSTM_H__
-#include"rnn.h"
+#include "rnn.h"
 
 struct lstm_neuron
 {
@@ -18,31 +18,38 @@ struct lstm_neuron
 	double out_transbia,*out_transwi,*out_transwh;
 };
 
-class NormalLSTM:public RNN
+class NormalLSTM
 {
-	public:
-		lstm_neuron *hide;
-		NormalLSTM(int,int,int);
-		~NormalLSTM();
-		void INIT();
-		void Datain(const char*);
-		void Dataout(const char*);
+protected:
+	int INUM;
+	int HNUM;
+	int MAXTIME;
+public:
+	lstm_neuron *hide;
+	NormalLSTM(int,int,int);
+	~NormalLSTM();
+	void INIT();
+	void Datain(const char*);
+	void Dataout(const char*);
 };
 
-class DeepLSTM:public RNN
+class DeepLSTM
 {
-	public:
-		lstm_neuron *hlink;
-		lstm_neuron **hide;
-		DeepLSTM(int,int,int,int);
-		~DeepLSTM();
-		void ConstructorAssist();
-		void DestructorAssist();
-		void INIT();
-		void Datain(const char*);
-		void Dataout(const char*);
+protected:
+	int INUM;
+	int HNUM;
+	int DEPTH;
+	int MAXTIME;
+public:
+	lstm_neuron *hlink;
+	lstm_neuron **hide;
+	DeepLSTM(int,int,int,int);
+	~DeepLSTM();
+	void ConstructorAssist();
+	void DestructorAssist();
+	void INIT();
+	void Datain(const char*);
+	void Dataout(const char*);
 };
-
-#include "lstmfunction.h"
 
 #endif

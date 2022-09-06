@@ -1,9 +1,5 @@
 /*rnnfunction.h header file made by ValK*/
 /*2019/3/29                  version 0.2*/
-
-#ifndef __RNNFUNCTION_H__
-#define __RNNFUNCTION_H__
-
 #include "rnn.h"
 
 #include<iostream>
@@ -66,9 +62,8 @@ void NormalRNN::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -88,9 +83,8 @@ void NormalRNN::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -199,9 +193,8 @@ void DeepRNN::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -232,9 +225,8 @@ void DeepRNN::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>>[Error]Cannot open file."<<endl;
-		system("pause");
-		exit(0);
+		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
 	{
@@ -259,4 +251,3 @@ void DeepRNN::Dataout(const char* FILENAME)
 	fout.close();
 	return;
 }
-#endif
