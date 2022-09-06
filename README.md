@@ -23,7 +23,7 @@ This repo is too old and i'm trying to make it running correctly. (and only runn
 `nlpmain.cpp` and `mainassist.h` are useless. If you really want to use this project, only do this:
 
 ```C++
-#include "NLPann.h"
+#include "src/NLPann.h"
 ```
 
 Add the `NLPann.h` as the header, then you could use all models in it.

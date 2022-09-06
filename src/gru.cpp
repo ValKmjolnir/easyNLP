@@ -75,7 +75,7 @@ void NormalGRU::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error]Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -106,7 +106,7 @@ void NormalGRU::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error]Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -256,7 +256,7 @@ void DeepGRU::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error]Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -304,7 +304,7 @@ void DeepGRU::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error]Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)

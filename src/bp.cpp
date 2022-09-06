@@ -44,7 +44,7 @@ double NormalBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -59,7 +59,7 @@ double NormalBP::ActivateFunction(double x)
 		return elu(x);
 	else
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -68,7 +68,7 @@ double NormalBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -83,7 +83,7 @@ double NormalBP::DiffFunction(double x)
 		return diffelu(x);
 	else
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -180,7 +180,7 @@ void NormalBP::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -203,7 +203,7 @@ void NormalBP::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -219,7 +219,7 @@ void NormalBP::Dataout(const char* FILENAME)
 			fout<<output[i].w[j]<<endl;
 	}
 	fout.close();
-	cout<<"easyNLP>>Output finished"<<endl;
+	cout<<">> Output finished"<<endl;
 }
 
 void NormalBP::SetFunction(const char* function_name)
@@ -233,7 +233,7 @@ void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,c
 	{
 		INIT();
 		Dataout(dataFilename);
-		cout<<"easyNLP>> [NormalBP] Initializing completed.\n";
+		cout<<">> [NormalBP] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -247,8 +247,8 @@ void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,c
 		ifstream fint(TrainingdataName);
 		if(finq.fail()||fint.fail())
 		{
-			cout<<"easyNLP>> [Error]Cannot open data file!"<<endl;
-			cout<<"easyNLP>> [Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			cout<<">> [Error] Cannot open data file!"<<endl;
+			cout<<">> [Error] Lack "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
 			exit(-1);
 		}
 		for(int b=0;b<batch_size;b++)
@@ -266,14 +266,14 @@ void NormalBP::TotalWork(const char* dataFilename,const char *QuestiondataName,c
 		fint.close();
 		if(epoch%10==0)
 		{
-			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
 			if(epoch%50==0)
 				Dataout(dataFilename);
 		}
 	}
-	cout<<"easyNLP>>Final output in progress..."<<endl;
+	cout<<">> Final output in progress..."<<endl;
 	Dataout(dataFilename);
-	cout<<"easyNLP>>Training complete."<<endl;
+	cout<<">> Training complete."<<endl;
 	return;
 }
 
@@ -325,7 +325,7 @@ double DeepBP::ActivateFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -340,7 +340,7 @@ double DeepBP::ActivateFunction(double x)
 		return elu(x);
 	else
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -349,7 +349,7 @@ double DeepBP::DiffFunction(double x)
 {
 	if(func_name=="Unknown")
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 	else if(func_name=="sigmoid")
@@ -364,7 +364,7 @@ double DeepBP::DiffFunction(double x)
 		return diffelu(x);
 	else
 	{
-		cout<<"easyNLP>> [Error]You haven't chose a correct funtion.";
+		cout<<">> [Error] You haven't chose a correct funtion.";
 		exit(-1);
 	}
 }
@@ -498,7 +498,7 @@ void DeepBP::Datain(const char* FILENAME)
 	ifstream fin(FILENAME);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -528,7 +528,7 @@ void DeepBP::Dataout(const char* FILENAME)
 	ofstream fout(FILENAME);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open file."<<endl;
+		cout<<">> [Error] Cannot open file."<<endl;
 		exit(-1);
 	}
 	for(int i=0;i<HNUM;i++)
@@ -551,7 +551,7 @@ void DeepBP::Dataout(const char* FILENAME)
 			fout<<output[i].w[j]<<endl;
 	}
 	fout.close();
-	cout<<"easyNLP>>Output finished"<<endl;
+	cout<<">> Output finished"<<endl;
 }
 
 void DeepBP::SetFunction(const char* function_name)
@@ -565,7 +565,7 @@ void DeepBP::TotalWork(const char* dataFilename,const char *QuestiondataName,con
 	{
 		INIT();
 		Dataout(dataFilename);
-		cout<<"easyNLP>> [DeepBP] Initializing completed.\n";
+		cout<<">> [DeepBP] Initializing completed.\n";
 	}
 	else
 		Datain(dataFilename);
@@ -579,8 +579,8 @@ void DeepBP::TotalWork(const char* dataFilename,const char *QuestiondataName,con
 		ifstream fint(TrainingdataName);
 		if(finq.fail()||fint.fail())
 		{
-			cout<<"easyNLP>> [Error]Cannot open data file!"<<endl;
-			cout<<"easyNLP>> [Lack] "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
+			cout<<">> [Error] Cannot open data file!"<<endl;
+			cout<<">> [Error] Lack "<<QuestiondataName<<" and "<<TrainingdataName<<endl;
 			exit(-1);
 		}
 		for(int b=0;b<batch_size;b++)
@@ -598,13 +598,13 @@ void DeepBP::TotalWork(const char* dataFilename,const char *QuestiondataName,con
 		fint.close();
 		if(epoch%10==0)
 		{
-			cout<<"easyNLP>>Epoch "<<epoch<<": Error :"<<maxerror<<endl;
+			cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<endl;
 			if(epoch%50==0)
 				Dataout(dataFilename);
 		}
 	}
-	cout<<"easyNLP>>Final output in progress..."<<endl;
+	cout<<">> Final output in progress..."<<endl;
 	Dataout(dataFilename);
-	cout<<"easyNLP>>Training complete."<<endl;
+	cout<<">> Training complete."<<endl;
 	return;
 }

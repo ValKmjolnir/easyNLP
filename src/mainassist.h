@@ -186,14 +186,14 @@ class UserObject
 };
 
 
-class ObjManagement
+class ObjManager
 {
 	private:
 		UserObject *__Head;
 		ObjElement __Datatemp;
 	public:
-		ObjManagement();
-		~ObjManagement();
+		ObjManager();
+		~ObjManager();
 		void ObjDataIn();
 		void ObjDataOut();
 		void MakeData();
@@ -208,13 +208,13 @@ class ObjManagement
 		void FindSpecialObj(const char*);
 };
 
-ObjManagement::ObjManagement()
+ObjManager::ObjManager()
 {
 	__Head=new UserObject;
 	__Head->__p=NULL;
 }
 
-ObjManagement::~ObjManagement()
+ObjManager::~ObjManager()
 {
 	UserObject *Node=__Head;
 	UserObject *Temp;
@@ -227,19 +227,19 @@ ObjManagement::~ObjManagement()
 	delete Node;
 }
 
-void ObjManagement::ObjDataIn()
+void ObjManager::ObjDataIn()
 {
 	UserObject *Node=__Head;
 	if(!fopen("ObjData.dat","r"))
 	{
 		FILE* fd=fopen("ObjData.dat","w");
 		fclose(fd);
-		cout<<"easyNLP>> [init] Initializing completed."<<endl;
+		cout<<">> [init] Initializing completed."<<endl;
 	}
 	fstream fin("ObjData.dat",ios::in|ios::binary);
 	if(fin.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open important data \"ObjData.dat\" or this data maybe lost!"<<endl;
+		cout<<">> [Error]Cannot open important data \"ObjData.dat\" or this data maybe lost!"<<endl;
 		exit(-1);
 	}
 	while(!fin.eof())
@@ -274,13 +274,13 @@ void ObjManagement::ObjDataIn()
 	return;
 }
 
-void ObjManagement::ObjDataOut()
+void ObjManager::ObjDataOut()
 {
 	UserObject *Node=__Head;
 	fstream fout("ObjData.dat",ios::out|ios::binary);
 	if(fout.fail())
 	{
-		cout<<"easyNLP>> [Error]Cannot open important data \"Objdata.dat\" or this data maybe lost!"<<endl;
+		cout<<">> [Error]Cannot open important data \"Objdata.dat\" or this data maybe lost!"<<endl;
 		exit(-1);
 	}
 	while(Node->__p!=NULL)
@@ -292,17 +292,17 @@ void ObjManagement::ObjDataOut()
 	return;
 }
 
-void ObjManagement::MakeData()
+void ObjManager::MakeData()
 {
 	UserObject *Node=__Head;
-	cout<<"easyNLP>>Name of your project: ";
+	cout<<">>Name of your project: ";
 	cin>>__Datatemp.__ObjName;
 	while(Node->__p!=NULL)
 	{
 		Node=Node->__p;
 		if(Node->CheckObjName(__Datatemp.__ObjName))
 		{
-			cout<<"easyNLP>> [Error]You have already created this project!"<<endl<<endl;
+			cout<<">> [Error]You have already created this project!"<<endl<<endl;
 			cout<<"         |The project is:"<<endl;
 			Node->PrintObj();
 			return;
@@ -310,7 +310,7 @@ void ObjManagement::MakeData()
 	}
 	if(!ObjChoose())
 	{
-		cout<<"easyNLP>> [Quiting]"<<endl;
+		cout<<">> [Quiting]"<<endl;
 		return;
 	}
 	Node->__p=new UserObject(
@@ -335,13 +335,13 @@ void ObjManagement::MakeData()
 	);
 	Node=Node->__p;
 	Node->__p=NULL;
-	cout<<"easyNLP>>New project is established successfully."<<endl;
+	cout<<">>New project is established successfully."<<endl;
 }
 
-bool ObjManagement::ObjChoose()
+bool ObjManager::ObjChoose()
 {
 	string Command;
-	cout<<"easyNLP>>"<<endl;
+	cout<<">>"<<endl;
 	cout<<"         |1. |BP project(Normal)            |"<<endl;
 	cout<<"         |2. |BP project(Deep)              |"<<endl;
 	cout<<"         |3. |seq2seq project(RNN:Normal)   |"<<endl;
@@ -360,11 +360,11 @@ bool ObjManagement::ObjChoose()
 	cout<<"         |16.|I don't want to choose.(quit) |"<<endl;
 	while(1)
 	{
-		cout<<"easyNLP>> [Choice]Input your choice: ";
+		cout<<">> [Choice]Input your choice: ";
 		cin>>Command;
 		if(Command=="1")
 		{
-			cout<<"easyNLP>>"<<endl;
+			cout<<">>"<<endl;
 			cout<<"         |BP project(Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -375,37 +375,37 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for all layers)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the output file: ";
+			cout<<">>Name of the output file: ";
 			cin>>__Datatemp.__FileName_1;
 			strcpy(__Datatemp.__FileName_2,"NULL");
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function: ";
+			cout<<">>Name of the activate function: ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__DEPTH=0;
 			__Datatemp.__MAXTIME=0;
 			__Datatemp.__NetworkType=1;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="2")
 		{
-			cout<<"easyNLP>>"<<endl;
+			cout<<">>"<<endl;
 			cout<<"         |BP project(Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -417,38 +417,38 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for all layers)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the output file: ";
+			cout<<">>Name of the output file: ";
 			cin>>__Datatemp.__FileName_1;
 			strcpy(__Datatemp.__FileName_2,"NULL");
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function: ";
+			cout<<">>Name of the activate function: ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
 			__Datatemp.__MAXTIME=0;
 			__Datatemp.__NetworkType=2;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="3")
 		{
-			cout<<"easyNLP>> [RNN]"<<endl;
+			cout<<">> [RNN]"<<endl;
 			cout<<"         |seq2seq project(RNN/LSTM/GRU:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -460,42 +460,42 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the decoder module file: ";
+			cout<<">>Name of the decoder module file: ";
 			cin>>__Datatemp.__FileName_2;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_3;
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__DEPTH=0;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=3;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="4")
 		{
-			cout<<"easyNLP>> [RNN]"<<endl;
+			cout<<">> [RNN]"<<endl;
 			cout<<"         |seq2seq project(RNN/LSTM/GRU:Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -508,43 +508,43 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the decoder module file: ";
+			cout<<">>Name of the decoder module file: ";
 			cin>>__Datatemp.__FileName_2;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_3;
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=4;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="5")
 		{
-			cout<<"easyNLP>> [LSTM]"<<endl;
+			cout<<">> [LSTM]"<<endl;
 			cout<<"         |seq2seq project(RNN/LSTM/GRU:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -556,42 +556,42 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the decoder module file: ";
+			cout<<">>Name of the decoder module file: ";
 			cin>>__Datatemp.__FileName_2;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_3;
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__DEPTH=0;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=5;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="6")
 		{
-			cout<<"easyNLP>> [LSTM]"<<endl;
+			cout<<">> [LSTM]"<<endl;
 			cout<<"         |seq2seq project(RNN/LSTM/GRU:Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -604,43 +604,43 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the decoder module file: ";
+			cout<<">>Name of the decoder module file: ";
 			cin>>__Datatemp.__FileName_2;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_3;
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__NetworkType=6;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="7")
 		{
-			cout<<"easyNLP>> [GRU]"<<endl;
+			cout<<">> [GRU]"<<endl;
 			cout<<"         |seq2seq project(RNN/LSTM/GRU:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -652,42 +652,42 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the decoder module file: ";
+			cout<<">>Name of the decoder module file: ";
 			cin>>__Datatemp.__FileName_2;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_3;
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__DEPTH=0;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=7;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="8")
 		{
-			cout<<"easyNLP>> [GRU]"<<endl;
+			cout<<">> [GRU]"<<endl;
 			cout<<"         |seq2seq project(RNN/LSTM/GRU:Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -700,43 +700,43 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the decoder module file: ";
+			cout<<">>Name of the decoder module file: ";
 			cin>>__Datatemp.__FileName_2;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_3;
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2seq uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=8;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="9")
 		{
-			cout<<"easyNLP>> [RNN]"<<endl;
+			cout<<">> [RNN]"<<endl;
 			cout<<"         |seq2vec project(RNN/LSTM/GRU:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -748,41 +748,41 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_2;
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__DEPTH=0;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=9;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="10")
 		{
-			cout<<"easyNLP>> [RNN]"<<endl;
+			cout<<">> [RNN]"<<endl;
 			cout<<"         |seq2vec project(RNN/LSTM/GRU:Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -795,42 +795,42 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_2;
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=10;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="11")
 		{
-			cout<<"easyNLP>> [LSTM]"<<endl;
+			cout<<">> [LSTM]"<<endl;
 			cout<<"         |seq2vec project(RNN/LSTM/GRU:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -842,41 +842,41 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_2;
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__DEPTH=0;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=11;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="12")
 		{
-			cout<<"easyNLP>> [LSTM]"<<endl;
+			cout<<">> [LSTM]"<<endl;
 			cout<<"         |seq2vec project(RNN/LSTM/GRU:Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -889,42 +889,42 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_2;
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=12;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="13")
 		{
-			cout<<"easyNLP>> [GRU]"<<endl;
+			cout<<">> [GRU]"<<endl;
 			cout<<"         |seq2vec project(RNN/LSTM/GRU:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -936,41 +936,41 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_2;
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
 			__Datatemp.__DEPTH=0;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=13;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="14")
 		{
-			cout<<"easyNLP>> [GRU]"<<endl;
+			cout<<">> [GRU]"<<endl;
 			cout<<"         |seq2vec project(RNN/LSTM/GRU:Deep) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -983,42 +983,42 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |Function: one of activate functions(for output layer)"<<endl;
 			cout<<"         |Batch size: Size of input/training set batch"<<endl;
 			cout<<"         |Learning rate:This decides how fast your model runs"<<endl;
-			cout<<"easyNLP>>Name of the encoder module file: ";
+			cout<<">>Name of the encoder module file: ";
 			cin>>__Datatemp.__FileName_1;
-			cout<<"easyNLP>>Name of the output layer file: ";
+			cout<<">>Name of the output layer file: ";
 			cin>>__Datatemp.__FileName_2;
 			strcpy(__Datatemp.__FileName_3,"NULL");
 			strcpy(__Datatemp.__FileName_4,"NULL");
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
-			cout<<"easyNLP>>Name of input set file: ";
+			cout<<">>Name of input set file: ";
 			cin>>__Datatemp.__FileName_7;
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
-			cout<<"easyNLP>>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
+			cout<<">>Name of the activate function(seq2vec uses softmax as output and your function may not work): ";
 			cin>>__Datatemp.__Function;
-			cout<<"easyNLP>>Number of input layer neurons: ";
+			cout<<">>Number of input layer neurons: ";
 			cin>>__Datatemp.__INUM;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
-			cout<<"easyNLP>>Number of output layer neurons: ";
+			cout<<">>Number of output layer neurons: ";
 			cin>>__Datatemp.__ONUM;
 			__Datatemp.__INUM=27;
 			__Datatemp.__ONUM=27;
-			cout<<"easyNLP>>Number of layers: ";
+			cout<<">>Number of layers: ";
 			cin>>__Datatemp.__DEPTH;
-			cout<<"easyNLP>>Max length of sequence: ";
+			cout<<">>Max length of sequence: ";
 			cin>>__Datatemp.__MAXTIME;
 			__Datatemp.__NetworkType=14;
-			cout<<"easyNLP>>Learning rate(must more than 0 but less than 1): ";
+			cout<<">>Learning rate(must more than 0 but less than 1): ";
 			cin>>__Datatemp.__LearningRate;
-			cout<<"easyNLP>>Size of input/training set batch: ";
+			cout<<">>Size of input/training set batch: ";
 			cin>>__Datatemp.__BatchSize;
 			break;
 		}
 		else if(Command=="15")
 		{
-			cout<<"easyNLP>>"<<endl;
+			cout<<">>"<<endl;
 			cout<<"         |char2vec project(BP:Normal) needs:"<<endl;
 			cout<<"         |INUM: Number of input layer neurons is set to 95"<<endl;
 			cout<<"         |HNUM: Number of hidden layer neurons"<<endl;
@@ -1027,7 +1027,7 @@ bool ObjManagement::ObjChoose()
 			cout<<"         |File: Name of training set file"<<endl;
 			cout<<"         |Function: one of activate functions is set as softmax"<<endl;
 			cout<<"         |Learning rate:0.1"<<endl;
-			cout<<"easyNLP>>Name of the output data file: ";
+			cout<<">>Name of the output data file: ";
 			cin>>__Datatemp.__FileName_1;
 			strcpy(__Datatemp.__FileName_2,"NULL");
 			strcpy(__Datatemp.__FileName_3,"NULL");
@@ -1035,11 +1035,11 @@ bool ObjManagement::ObjChoose()
 			strcpy(__Datatemp.__FileName_5,"NULL");
 			strcpy(__Datatemp.__FileName_6,"NULL");
 			strcpy(__Datatemp.__FileName_7,"NULL");
-			cout<<"easyNLP>>Name of training set file: ";
+			cout<<">>Name of training set file: ";
 			cin>>__Datatemp.__FileName_8;
 			strcpy(__Datatemp.__Function,"softmax");
 			__Datatemp.__INUM=95;
-			cout<<"easyNLP>>Number of hidden layer neurons: ";
+			cout<<">>Number of hidden layer neurons: ";
 			cin>>__Datatemp.__HNUM;
 			__Datatemp.__ONUM=95;
 			__Datatemp.__DEPTH=0;
@@ -1054,17 +1054,17 @@ bool ObjManagement::ObjChoose()
 			return false;
 		}
 		else
-			cout<<"easyNLP>> [Error]Undefined choice."<<endl;
+			cout<<">> [Error]Undefined choice."<<endl;
 	}
 	return true;
 }
 
-void ObjManagement::RunModule()
+void ObjManager::RunModule()
 {
 	bool __FoundObj=false;
 	UserObject *Node=__Head;
 	string temp_obj_name;
-	cout<<"easyNLP>>Name of the project: ";
+	cout<<">>Name of the project: ";
 	cin>>temp_obj_name;
 	while(Node->__p!=NULL)
 	{
@@ -1080,11 +1080,11 @@ void ObjManagement::RunModule()
 	{
 		if(Node->getObjPointer()->__NetworkType==1)
 		{
-			cout<<"easyNLP>> [Running]BP(Normal neural network)"<<endl;
+			cout<<">> [Running]BP(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalBP __MainBP(Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM);
@@ -1094,11 +1094,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==2)
 		{
-			cout<<"easyNLP>> [Running]BP(Deep neural network)"<<endl;
+			cout<<">> [Running]BP(Deep neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepBP __MainBP(Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH);
@@ -1108,11 +1108,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==3)
 		{
-			cout<<"easyNLP>> [Running]RNN seq2seq(Normal neural network)"<<endl;
+			cout<<">> [Running]RNN seq2seq(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalSeq2Seq __MainSeq("rnn",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__MAXTIME);
@@ -1127,22 +1127,22 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==4)
 		{
-			cout<<"easyNLP>> [Running]RNN seq2seq(Deep neural network)"<<endl;
+			cout<<">> [Running]RNN seq2seq(Deep neural network)"<<endl;
 			if(Node->getObjPointer()->__DEPTH>2)
 			{
 				char Confirm;
-				cout<<"easyNLP>> [Warning]Seq2Seq with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
+				cout<<">> [Warning]Seq2Seq with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
 				cin>>Confirm;
 				if(Confirm!='y')
 				{
-					cout<<"easyNLP>> [Error]Running process cancelled"<<endl;
+					cout<<">> [Error]Running process cancelled"<<endl;
 					return;
 				}
 			}
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepSeq2Seq __MainSeq("rnn",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH,Node->getObjPointer()->__MAXTIME);
@@ -1157,11 +1157,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==5)
 		{
-			cout<<"easyNLP>> [Running]LSTM seq2seq(Normal neural network)"<<endl;
+			cout<<">> [Running]LSTM seq2seq(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalSeq2Seq __MainSeq("lstm",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__MAXTIME);
@@ -1176,22 +1176,22 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==6)
 		{
-			cout<<"easyNLP>> [Running]LSTM seq2seq(Deep neural network)"<<endl;
+			cout<<">> [Running]LSTM seq2seq(Deep neural network)"<<endl;
 			if(Node->getObjPointer()->__DEPTH>2)
 			{
 				char Confirm;
-				cout<<"easyNLP>> [Warning]Seq2Seq with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
+				cout<<">> [Warning]Seq2Seq with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
 				cin>>Confirm;
 				if(Confirm!='y')
 				{
-					cout<<"easyNLP>> [Error]Running process cancelled"<<endl;
+					cout<<">> [Error]Running process cancelled"<<endl;
 					return;
 				}
 			}
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepSeq2Seq __MainSeq("lstm",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH,Node->getObjPointer()->__MAXTIME);
@@ -1206,11 +1206,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==7)
 		{
-			cout<<"easyNLP>> [Running]GRU seq2seq(Normal neural network)"<<endl;
+			cout<<">> [Running]GRU seq2seq(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalSeq2Seq __MainSeq("gru",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__MAXTIME);
@@ -1225,22 +1225,22 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==8)
 		{
-			cout<<"easyNLP>> [Running]GRU seq2seq(Deep neural network)"<<endl;
+			cout<<">> [Running]GRU seq2seq(Deep neural network)"<<endl;
 			if(Node->getObjPointer()->__DEPTH>2)
 			{
 				char Confirm;
-				cout<<"easyNLP>> [Warning]Seq2Seq with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
+				cout<<">> [Warning]Seq2Seq with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
 				cin>>Confirm;
 				if(Confirm!='y')
 				{
-					cout<<"easyNLP>> [Error]Running process cancelled"<<endl;
+					cout<<">> [Error]Running process cancelled"<<endl;
 					return;
 				}
 			}
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepSeq2Seq __MainSeq("gru",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH,Node->getObjPointer()->__MAXTIME);
@@ -1255,11 +1255,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==9)
 		{
-			cout<<"easyNLP>> [Running]RNN seq2vec(Normal neural network)"<<endl;
+			cout<<">> [Running]RNN seq2vec(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalSeq2Vec __MainVec("rnn",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__MAXTIME);
@@ -1270,22 +1270,22 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==10)
 		{
-			cout<<"easyNLP>> [Running]RNN seq2vec(Deep neural network)"<<endl;
+			cout<<">> [Running]RNN seq2vec(Deep neural network)"<<endl;
 			if(Node->getObjPointer()->__DEPTH>2)
 			{
 				char Confirm;
-				cout<<"easyNLP>> [Warning]Seq2Vec with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
+				cout<<">> [Warning]Seq2Vec with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
 				cin>>Confirm;
 				if(Confirm!='y')
 				{
-					cout<<"easyNLP>> [Error]Running process cancelled"<<endl;
+					cout<<">> [Error]Running process cancelled"<<endl;
 					return;
 				}
 			}
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepSeq2Vec __MainVec("rnn",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH,Node->getObjPointer()->__MAXTIME);
@@ -1296,11 +1296,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==11)
 		{
-			cout<<"easyNLP>> [Running]LSTM seq2vec(Normal neural network)"<<endl;
+			cout<<">> [Running]LSTM seq2vec(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalSeq2Vec __MainVec("lstm",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__MAXTIME);
@@ -1311,22 +1311,22 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==12)
 		{
-			cout<<"easyNLP>> [Running]LSTM seq2vec(Deep neural network)"<<endl;
+			cout<<">> [Running]LSTM seq2vec(Deep neural network)"<<endl;
 			if(Node->getObjPointer()->__DEPTH>2)
 			{
 				char Confirm;
-				cout<<"easyNLP>> [Warning]Seq2Vec with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
+				cout<<">> [Warning]Seq2Vec with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
 				cin>>Confirm;
 				if(Confirm!='y')
 				{
-					cout<<"easyNLP>> [Error]Running process cancelled"<<endl;
+					cout<<">> [Error]Running process cancelled"<<endl;
 					return;
 				}
 			}
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepSeq2Vec __MainVec("lstm",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH,Node->getObjPointer()->__MAXTIME);
@@ -1337,11 +1337,11 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==13)
 		{
-			cout<<"easyNLP>> [Running]GRU seq2vec(Normal neural network)"<<endl;
+			cout<<">> [Running]GRU seq2vec(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			NormalSeq2Vec __MainVec("gru",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__MAXTIME);
@@ -1352,22 +1352,22 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==14)
 		{
-			cout<<"easyNLP>> [Running]GRU seq2vec(Deep neural network)"<<endl;
+			cout<<">> [Running]GRU seq2vec(Deep neural network)"<<endl;
 			if(Node->getObjPointer()->__DEPTH>2)
 			{
 				char Confirm;
-				cout<<"easyNLP>> [Warning]Seq2Vec with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
+				cout<<">> [Warning]Seq2Vec with two more layers may not work well,do you still want to run this model?(y/n)"<<endl;
 				cin>>Confirm;
 				if(Confirm!='y')
 				{
-					cout<<"easyNLP>> [Error]Running process cancelled"<<endl;
+					cout<<">> [Error]Running process cancelled"<<endl;
 					return;
 				}
 			}
 			if(!fopen(Node->getObjPointer()->__FileName_7,"r")||!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_7<<" and "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			DeepSeq2Vec __MainVec("gru",Node->getObjPointer()->__INUM,Node->getObjPointer()->__HNUM,Node->getObjPointer()->__ONUM,Node->getObjPointer()->__DEPTH,Node->getObjPointer()->__MAXTIME);
@@ -1378,30 +1378,30 @@ void ObjManagement::RunModule()
 		}
 		else if(Node->getObjPointer()->__NetworkType==15)
 		{
-			cout<<"easyNLP>> [Running]BP char2vec(Normal neural network)"<<endl;
+			cout<<">> [Running]BP char2vec(Normal neural network)"<<endl;
 			if(!fopen(Node->getObjPointer()->__FileName_8,"r"))
 			{
-				cout<<"easyNLP>> [Error]Cannot open file."<<endl;
-				cout<<"easyNLP>> [Lack] "<<Node->getObjPointer()->__FileName_8<<endl;
+				cout<<">> [Error]Cannot open file."<<endl;
+				cout<<">> [Lack] "<<Node->getObjPointer()->__FileName_8<<endl;
 				return;
 			}
 			Char2Vec __MainVec(Node->getObjPointer()->__HNUM);
 			__MainVec.TotalWork(Node->getObjPointer()->__FileName_1,Node->getObjPointer()->__FileName_8);
 		}
 		else
-			cout<<"easyNLP>> [Error]Unknown Type"<<endl;
+			cout<<">> [Error]Unknown Type"<<endl;
 		return;
 	}
-	cout<<"easyNLP>> [Error]This project does not exist."<<endl;
+	cout<<">> [Error]This project does not exist."<<endl;
 	return;
 }
 
-void ObjManagement::PrintAllObj()
+void ObjManager::PrintAllObj()
 {
 	UserObject *Node=__Head;
 	if(__Head->__p==NULL)
 	{
-		cout<<"easyNLP>> [Error]Empty list.(0 project inside)"<<endl;
+		cout<<">> [Error]Empty list.(0 project inside)"<<endl;
 		return;
 	}
 	while(Node->__p!=NULL)
@@ -1412,11 +1412,11 @@ void ObjManagement::PrintAllObj()
 	return;
 }
 
-void ObjManagement::FindObj()
+void ObjManager::FindObj()
 {
 	UserObject *Node=__Head;
 	string temp_obj_name;
-	cout<<"easyNLP>>Name of the project: ";
+	cout<<">>Name of the project: ";
 	cin>>temp_obj_name;
 	while(Node->__p!=NULL)
 	{
@@ -1427,15 +1427,15 @@ void ObjManagement::FindObj()
 			return;
 		}
 	}
-	cout<<"easyNLP>> [Error]This project does not exist."<<endl;
+	cout<<">> [Error]This project does not exist."<<endl;
 }
 
-void ObjManagement::EditObj()
+void ObjManager::EditObj()
 {
 	UserObject *Node=__Head;
 	ObjElement __Temp;
 	string temp_obj_name;
-	cout<<"easyNLP>>Name of the project: ";
+	cout<<">>Name of the project: ";
 	cin>>temp_obj_name;
 	while(Node->__p!=NULL)
 	{
@@ -1443,7 +1443,7 @@ void ObjManagement::EditObj()
 		if(Node->CheckObjName(temp_obj_name))
 		{
 			Node->PrintObj();
-			cout<<"easyNLP>> [Editing]"<<endl;
+			cout<<">> [Editing]"<<endl;
 			cout<<"         ------------------------------------------------------"<<endl;
 			cout<<"         |Name         |";cin>>__Temp.__ObjName;
 			cout<<"         |File 1       |";cin>>__Temp.__FileName_1;
@@ -1469,13 +1469,13 @@ void ObjManagement::EditObj()
 			return;
 		}
 	}
-	cout<<"easyNLP>> [Error]This project does not exist."<<endl;
+	cout<<">> [Error]This project does not exist."<<endl;
 }
 
-void ObjManagement::DeleteObj()
+void ObjManager::DeleteObj()
 {
 	string DelObjName;
-	cout<<"easyNLP>>Input the name of the project you want to delete: ";
+	cout<<">>Input the name of the project you want to delete: ";
 	cin>>DelObjName;
 	UserObject *Node=__Head;
 	UserObject *Temp;
@@ -1488,20 +1488,20 @@ void ObjManagement::DeleteObj()
 			Temp->__p=Node->__p;
 			delete Node;
 			ObjDataOut();
-			cout<<"easyNLP>>Finished.(But the data must be deleted by yourself!)"<<endl;
+			cout<<">>Finished.(But the data must be deleted by yourself!)"<<endl;
 			return;
 		}
 	}
-	cout<<"easyNLP>> [Error]Cannot find this project."<<endl;
+	cout<<">> [Error]Cannot find this project."<<endl;
 	return;
 }
 
-void ObjManagement::ChangeLearningRate()
+void ObjManager::ChangeLearningRate()
 {
 	UserObject *Node=__Head;
 	double __Temp_Learning_Rate;
 	string temp_obj_name;
-	cout<<"easyNLP>>Name of the project: ";
+	cout<<">>Name of the project: ";
 	cin>>temp_obj_name;
 	while(Node->__p!=NULL)
 	{
@@ -1515,15 +1515,15 @@ void ObjManagement::ChangeLearningRate()
 			return;
 		}
 	}
-	cout<<"easyNLP>> [Error]This project does not exist."<<endl;
+	cout<<">> [Error]This project does not exist."<<endl;
 }
 
-void ObjManagement::ChangeBatchSize()
+void ObjManager::ChangeBatchSize()
 {
 	UserObject *Node=__Head;
 	int __Temp_Batch_size;
 	string temp_obj_name;
-	cout<<"easyNLP>>Name of the project: ";
+	cout<<">>Name of the project: ";
 	cin>>temp_obj_name;
 	while(Node->__p!=NULL)
 	{
@@ -1537,14 +1537,14 @@ void ObjManagement::ChangeBatchSize()
 			return;
 		}
 	}
-	cout<<"easyNLP>> [Error]This project does not exist."<<endl;
+	cout<<">> [Error]This project does not exist."<<endl;
 }
 
-void ObjManagement::FindSpecialObj(const char *Typename)
+void ObjManager::FindSpecialObj(const char *Typename)
 {
 	if(strcmp(Typename,"bp")&&strcmp(Typename,"rnn")&&strcmp(Typename,"lstm")&&strcmp(Typename,"gru"))
 	{
-		cout<<"easyNLP>> [Error]Undefined type."<<endl;
+		cout<<">> [Error]Undefined type."<<endl;
 		return;
 	}
 	UserObject *Node=__Head;
@@ -1572,7 +1572,7 @@ void ObjManagement::FindSpecialObj(const char *Typename)
 				Node->PrintObj();
 		}
 	}
-	cout<<"easyNLP>> [End]End of the list."<<endl;
+	cout<<">> [End]End of the list."<<endl;
 	return;
 }
 

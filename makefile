@@ -1,41 +1,53 @@
 .PHONY=clean
 
-SRC=actvfunc.h\
-	bp.h\
-	char2vec.h\
-	gru.h\
-	lstm.h\
-	NLPann.h\
-	rnn.h\
-	seq2seq.h\
-	seq2vec.h
+SRC=./src/actvfunc.h\
+	./src/bp.h\
+	./src/char2vec.h\
+	./src/gru.h\
+	./src/lstm.h\
+	./src/NLPann.h\
+	./src/rnn.h\
+	./src/seq2seq.h\
+	./src/seq2vec.h
 
 OBJECT=actvfunc.o bp.o rnn.o gru.o lstm.o seq2seq.o seq2vec.o
 
-actvfunc.o: actvfunc.h actvfunc.cpp
-	$(CXX) -O2 -std=c++11 -c actvfunc.cpp
+OPT=-O2
 
-bp.o: bp.h bp.cpp
-	$(CXX) -O2 -std=c++11 -c bp.cpp
+actvfunc.o: ./src/actvfunc.h ./src/actvfunc.cpp
+	@ echo "[build] actvfunc"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/actvfunc.cpp
 
-rnn.o: rnn.h rnn.cpp
-	$(CXX) -O2 -std=c++11 -c rnn.cpp
+bp.o: ./src/bp.h ./src/bp.cpp
+	@ echo "[build] bp"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/bp.cpp
 
-gru.o: gru.h gru.cpp
-	$(CXX) -O2 -std=c++11 -c gru.cpp
+rnn.o: ./src/rnn.h ./src/rnn.cpp
+	@ echo "[build] rnn"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/rnn.cpp
 
-lstm.o: lstm.h lstm.cpp
-	$(CXX) -O2 -std=c++11 -c lstm.cpp
-seq2seq.o: seq2seq.h seq2seq.cpp
-	$(CXX) -O2 -std=c++11 -c seq2seq.cpp
+gru.o: ./src/gru.h ./src/gru.cpp
+	@ echo "[build] gru"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/gru.cpp
 
-seq2vec.o: seq2vec.h seq2vec.cpp
-	$(CXX) -O2 -std=c++11 -c seq2vec.cpp
+lstm.o: ./src/lstm.h ./src/lstm.cpp
+	@ echo "[build] lstm"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/lstm.cpp
 
-easynlp: nlpmain.cpp mainassist.h $(SRC) $(OBJECT)
-	$(CXX) -O2 -std=c++11 -c nlpmain.cpp
-	$(CXX) nlpmain.o $(OBJECT) -o easynlp
-	rm $(OBJECT) nlpmain.o
+seq2seq.o: ./src/seq2seq.h ./src/seq2seq.cpp
+	@ echo "[build] seq2seq"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/seq2seq.cpp
+
+seq2vec.o: ./src/seq2vec.h ./src/seq2vec.cpp
+	@ echo "[build] seq2vec"
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/seq2vec.cpp
+
+easynlp: ./src/nlpmain.cpp ./src/mainassist.h $(SRC) $(OBJECT)
+	@ $(CXX) $(OPT) -std=c++11 -c ./src/nlpmain.cpp
+	@ echo "[link ] linking..."
+	@ $(CXX) nlpmain.o $(OBJECT) -o easynlp
+	@ rm nlpmain.o $(OBJECT)
+	@ echo "[done ] build done"
 
 clean:
 	-@ rm easynlp
