@@ -128,9 +128,9 @@ void NormalLSTM::Init()
 	}
 }
 
-void NormalLSTM::Datain(const char* FILENAME)
+void NormalLSTM::Datain(const std::string& filename)
 {
-	std::ifstream fin(FILENAME);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;
@@ -163,9 +163,9 @@ void NormalLSTM::Datain(const char* FILENAME)
 	return;
 }
 
-void NormalLSTM::Dataout(const char* FILENAME)
+void NormalLSTM::Dataout(const std::string& filename)
 {
-	std::ofstream fout(FILENAME);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;
@@ -442,9 +442,9 @@ void DeepLSTM::Init()
 	return;
 }
 
-void DeepLSTM::Datain(const char* FILENAME)
+void DeepLSTM::Datain(const std::string& filename)
 {
-	std::ifstream fin(FILENAME);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;
@@ -499,9 +499,9 @@ void DeepLSTM::Datain(const char* FILENAME)
 	return;
 }
 
-void DeepLSTM::Dataout(const char* FILENAME)
+void DeepLSTM::Dataout(const std::string& filename)
 {
-	std::ofstream fout(FILENAME);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;

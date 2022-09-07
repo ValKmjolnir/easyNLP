@@ -16,7 +16,7 @@ private:
 	int INUM;
 	int HNUM;
 	int ONUM;
-	std::vector<std::vector<int>> cnt;
+	std::vector<std::vector<double>> cnt;
 	std::vector<double> input;
 	std::vector<double> expect;
 	double lr;
@@ -44,15 +44,15 @@ public:
 		srand(unsigned(time(NULL)));
 		for(int i=0;i<HNUM;i++)
 		{
-			hide[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)*0.1;
+			hide[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)/(1.0*INUM);
 			for(int j=0;j<INUM;j++)
-				hide[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)*0.02;
+				hide[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/(10.0*INUM);
 		}
 		for(int i=0;i<ONUM;i++)
 		{
-			output[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)*0.1;
+			output[i].bia=(rand()%2? 1:-1)*(1.0+rand()%10)/(1.0*HNUM);
 			for(int j=0;j<HNUM;j++)
-				output[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)*0.02;
+				output[i].w[j]=(rand()%2? 1:-1)*(1.0+rand()%10)/(10.0*HNUM);
 		}
 		return;
 	}
@@ -94,6 +94,17 @@ void Char2Vec::Mainwork(const std::string& filename)
 	double maxerror=1e8;
 	double error=1e8;
 	double softmax=0;
+
+	double max_cnt=-1;
+	for(auto& i:cnt)
+		for(auto j:i)
+			if(j>max_cnt)
+				max_cnt=j;
+	// limit to 0~95
+	if(max_cnt!=0)
+		for(auto& i:cnt)
+			for(auto& j:i)
+				j=j/max_cnt*95;
 	while(maxerror>0.1)
 	{
 		epoch++;
@@ -116,13 +127,14 @@ void Char2Vec::Mainwork(const std::string& filename)
 			maxerror+=error;
 			Training();
 		}
-		if(epoch%10==0)
+		if(epoch%100==0)
 		{
 			std::cout<<">> Epoch "<<epoch<<": Error :"<<maxerror<<std::endl;
-			if(epoch%50==0)
+			if(epoch%500==0)
 				Dataout(filename);
 		}
 	}
+	std::cout<<">> Finish training by "<<epoch<<" epoch, error="<<maxerror<<std::endl;
 	std::cout<<">> Final output in progress..."<<std::endl;
 	Dataout(filename);
 	std::cout<<">> Training complete."<<std::endl;
@@ -217,7 +229,6 @@ void Char2Vec::Dataout(const std::string& filename)
 			fout<<output[i].w[j]<<std::endl;
 	}
 	fout.close();
-	std::cout<<">> Output Finished.\n";
 	return;
 }
 void Char2Vec::Print()

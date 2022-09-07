@@ -56,9 +56,9 @@ void NormalRNN::Init()
 	return;
 }
 
-void NormalRNN::Datain(const char* FILENAME)
+void NormalRNN::Datain(const std::string& filename)
 {
-	std::ifstream fin(FILENAME);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;
@@ -77,9 +77,9 @@ void NormalRNN::Datain(const char* FILENAME)
 	return;
 }
 
-void NormalRNN::Dataout(const char* FILENAME)
+void NormalRNN::Dataout(const std::string& filename)
 {
-	std::ofstream fout(FILENAME);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;
@@ -187,9 +187,9 @@ void DeepRNN::Init()
 	return;
 }
 
-void DeepRNN::Datain(const char* FILENAME)
+void DeepRNN::Datain(const std::string& filename)
 {
-	std::ifstream fin(FILENAME);
+	std::ifstream fin(filename);
 	if(fin.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;
@@ -219,9 +219,9 @@ void DeepRNN::Datain(const char* FILENAME)
 	return;
 }
 
-void DeepRNN::Dataout(const char* FILENAME)
+void DeepRNN::Dataout(const std::string& filename)
 {
-	std::ofstream fout(FILENAME);
+	std::ofstream fout(filename);
 	if(fout.fail())
 	{
 		std::cout<<">> [Error] Cannot open file."<<std::endl;

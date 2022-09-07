@@ -2,7 +2,10 @@
 /*2019/5/7            version 1.1*/
 #ifndef __LSTM_H__
 #define __LSTM_H__
+
 #include "rnn.h"
+#include <iostream>
+#include <cstring>
 
 struct lstm_neuron
 {
@@ -29,8 +32,8 @@ public:
 	NormalLSTM(int,int,int);
 	~NormalLSTM();
 	void Init();
-	void Datain(const char*);
-	void Dataout(const char*);
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
 };
 
 class DeepLSTM
@@ -48,8 +51,8 @@ public:
 	void ConstructorAssist();
 	void DestructorAssist();
 	void Init();
-	void Datain(const char*);
-	void Dataout(const char*);
+	void Datain(const std::string&);
+	void Dataout(const std::string&);
 };
 
 #endif
