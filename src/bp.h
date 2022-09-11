@@ -10,71 +10,71 @@
 
 struct neuron
 {
-	double in,out,bia,diff;
-	double *w;
+    double in,out,bia,diff;
+    double *w;
 };
 
 class NormalBP
 {
 private:
-	int INUM;
-	int HNUM;
-	int ONUM;
-	int batch_size;
-	neuron *hide;
-	neuron *output;
-	double *input;
-	double *expect;
-	double lr;
-	double error;
-	std::string func_name;
-	double ActivateFunction(double);
-	double DiffFunction(double);
+    int INUM;
+    int HNUM;
+    int ONUM;
+    int batch_size;
+    neuron *hide;
+    neuron *output;
+    double *input;
+    double *expect;
+    double lr;
+    double error;
+    std::string func_name;
+    double ActivateFunction(double);
+    double DiffFunction(double);
 public:
-	NormalBP(int,int,int);
-	~NormalBP();
-	void Init();
-	void Calc();
-	void ErrorCalc();
-	double GetError();
-	void Training();
-	void Datain(const std::string&);
-	void Dataout(const std::string&);
-	void SetFunction(const std::string&);
-	void SetLearningrate(double);
-	void TotalWork(const std::string&,const std::string&,const std::string&);
+    NormalBP(int,int,int);
+    ~NormalBP();
+    void Init();
+    void Calc();
+    void ErrorCalc();
+    double GetError();
+    void Training();
+    void Datain(const std::string&);
+    void Dataout(const std::string&);
+    void SetFunction(const std::string&);
+    void SetLearningrate(double);
+    void TotalWork(const std::string&,const std::string&,const std::string&);
 };
 class DeepBP
 {
 private:
-	int INUM;
-	int HNUM;
-	int ONUM;
-	int DEPTH;
-	int batch_size;
-	neuron *hlink;
-	neuron **hide;
-	neuron *output;
-	double *input;
-	double *expect;
-	double lr;
-	double error;
-	std::string func_name;
-	double ActivateFunction(double);
-	double DiffFunction(double);
+    int INUM;
+    int HNUM;
+    int ONUM;
+    int DEPTH;
+    int batch_size;
+    neuron *hlink;
+    neuron **hide;
+    neuron *output;
+    double *input;
+    double *expect;
+    double lr;
+    double error;
+    std::string func_name;
+    double ActivateFunction(double);
+    double DiffFunction(double);
 public:
-	DeepBP(int,int,int,int);
-	~DeepBP();
-	void Init();
-	void Calc();
-	void ErrorCalc();
-	double GetError();
-	void Training();
-	void Datain(const std::string&);
-	void Dataout(const std::string&);
-	void SetFunction(const std::string&);
-	void SetLearningrate(double);
-	void TotalWork(const std::string&,const std::string&,const std::string&);
+    DeepBP(int,int,int,int);
+    ~DeepBP();
+    void Init();
+    void Calc();
+    void ErrorCalc();
+    double GetError();
+    void Training();
+    void Datain(const std::string&);
+    void Dataout(const std::string&);
+    void SetFunction(const std::string&);
+    void SetLearningrate(double);
+    void TotalWork(const std::string&,const std::string&,const std::string&);
 };
 
 #endif
